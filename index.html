@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Oráculo da Cruz Celta</title>
+
+<style>
+body {
+  background: radial-gradient(circle, #0a0a0a, #000000);
+  color: #e8d8a8;
+  font-family: Georgia, serif;
+  text-align: center;
+}
+
+h1 { margin-top: 20px; }
+
+button {
+  padding: 12px 20px;
+  background: linear-gradient(45deg, gold, #d4af37);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+input {
+  padding:10px;
+  width:200px;
+  margin:5px;
+  border-radius:5px;
+  border:none;
+}
+
+/* GRID ORIGINAL (INTACTO) */
+#board {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  grid-template-rows: repeat(4, 160px);
+  gap: 12px;
+  justify-content: center;
+  margin: 30px auto;
+}
+
+.card {
+  width: 100px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255,215,0,0.4);
+  cursor: pointer;
+  transition: transform 0.4s;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* POSIÇÕES ORIGINAIS (INTACTAS) */
+.pos0 { grid-column: 2; grid-row: 2; }
+.pos1 { grid-column: 2; grid-row: 2; transform: rotate(90deg); }
+.pos2 { grid-column: 2; grid-row: 3; }
+.pos3 { grid-column: 1; grid-row: 2; }
+.pos4 { grid-column: 2; grid-row: 1; }
+.pos5 { grid-column: 3; grid-row: 2; }
+.pos6 { grid-column: 4; grid-row: 1; }
+.pos7 { grid-column: 4; grid-row: 2; }
+.pos8 { grid-column: 4; grid-row: 3; }
+.pos9 { grid-column: 4; grid-row: 4; }
+
+#output {
+  max-width: 700px;
+  margin: 20px auto;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔮 Oráculo da Cruz Celta</h1>
+
+<!-- LOGIN (ADICIONADO LIMPO) -->
+<div id="login">
+  <p>🔐 Acesse o Oráculo</p>
+
+  <input id="email" type="email" placeholder="Email">
+  <br>
+  <input id="senha" type="password" placeholder="Senha (mínimo 6 caracteres)">
+  <br><br>
+
+  <p style="font-size:13px; opacity:0.8; max-width:320px; margin:auto;">
+    Para criar sua conta pela primeira vez, digite um e-mail válido e uma senha com pelo menos 6 caracteres e clique em "Criar Conta".
+  </p>
+
+  <br>
+
+  <button onclick="login()">Entrar</button>
+  <button onclick="registrar()">Criar Conta</button>
+</div>
+
+<!-- PAGAMENTO (SEU ORIGINAL) -->
+<div id="payment" style="display:none;">
+  <p>🔮 Este oráculo funciona por troca energética.</p>
+  <p>Contribua com R$2 via Pix:</p>
+  <p><strong>CHAVE PIX: vicentecury77@gmail.com</strong></p>
+  <button onclick="liberar()">Já paguei</button>
+</div>
+
+<!-- JOGO (SEU ORIGINAL) -->
+<div id="game" style="display:none;">
+  <button onclick="iniciar()">Abrir o Oráculo</button>
+  <div id="board"></div>
+  <div id="output"></div>
+</div>
+
+<!-- FIREBASE SIMPLES (SEM QUEBRAR SEU ORÁCULO) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAgFtlDzZDbiiQEuiSvFu0sXVLECEqjUrM",
+  authDomain: "tarot-online-887e3.firebaseapp.com",
+  projectId: "tarot-online-887e3",
+  storageBucket: "tarot-online-887e3.firebasestorage.app",
+  messagingSenderId: "345473207369",
+  appId: "1:345473207369:web:86ca31f5734ac20d728398"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// LOGIN
+window.login = function(){
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(()=>{
+      document.getElementById("login").style.display="none";
+      document.getElementById("payment").style.display="block";
+    })
+    .catch(e=>alert(e.message));
+};
+
+// REGISTRO
+window.registrar = function(){
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then(()=>{
+      return signInWithEmailAndPassword(auth, email, senha);
+    })
+    .then(()=>{
+      document.getElementById("login").style.display="none";
+      document.getElementById("payment").style.display="block";
+    })
+    .catch(e=>alert(e.message));
+};
+
+</script>
+
+<!-- ORÁCULO (100% INTACTO COMO VOCÊ MANDOU) -->
+<script>
+
+function liberar(){
+  document.getElementById("payment").style.display="none";
+  document.getElementById("game").style.display="block";
+}
+
+// BARALHO ORIGINAL (NÃO ALTERADO)
+const cards = [
+{
+nome:"O Louco",
+img:"img/louco.jpg",
+luz:"Um chamado para abandonar o controle e atravessar o desconhecido. A vida exige um salto que não pode ser calculado.",
+sombra:"Um movimento impulsivo ou fuga da realidade. Você pode estar avançando sem ver onde pisa."
+},
+{
+nome:"O Mago",
+img:"img/mago.jpg",
+luz:"Você tem em mãos os instrumentos necessários. A realidade pode ser moldada pela sua intenção.",
+sombra:"Manipulação, ilusão ou tentativa de controlar demais a situação."
+},
+{
+nome:"A Sacerdotisa",
+img:"img/sacerdotisa.jpg",
+luz:"Há algo sendo revelado no silêncio. A resposta não está fora, mas dentro de você.",
+sombra:"Negação da própria intuição. Você já percebe, mas evita encarar."
+},
+{
+nome:"A Imperatriz",
+img:"img/imperatriz.jpg",
+luz:"Um ciclo de crescimento e criação se abre. Algo quer nascer através de você.",
+sombra:"Excesso, acomodação ou apego ao conforto."
+},
+{
+nome:"O Imperador",
+img:"img/imperador.jpg",
+luz:"É hora de estruturar, assumir controle e estabelecer ordem.",
+sombra:"Rigidez, controle excessivo ou imposição sobre os outros."
+},
+{
+nome:"O Hierofante",
+img:"img/hierofante.jpg",
+luz:"Existe sabedoria em tradições e caminhos já trilhados. Um ensinamento pode ser acessado.",
+sombra:"Dogma, crenças limitantes ou submissão cega."
+},
+{
+nome:"Os Enamorados",
+img:"img/enamorados.jpg",
+luz:"Uma escolha alinhada com a verdade do seu coração se apresenta.",
+sombra:"Indecisão profunda ou conflito interno."
+},
+{
+nome:"O Carro",
+img:"img/carro.jpg",
+luz:"A direção está clara. Avançar agora é necessário.",
+sombra:"Falta de controle ou avanço sem direção."
+},
+{
+nome:"A Força",
+img:"img/forca.jpg",
+luz:"Domínio interior. A verdadeira força nasce do equilíbrio emocional.",
+sombra:"Explosões emocionais ou repressão excessiva."
+},
+{
+nome:"O Eremita",
+img:"img/eremita.jpg",
+luz:"Um recolhimento necessário. A resposta se revela na introspecção.",
+sombra:"Isolamento ou fuga do mundo."
+},
+{
+nome:"A Roda da Fortuna",
+img:"img/roda.jpg",
+luz:"Mudanças inevitáveis estão em movimento. O fluxo da vida está girando.",
+sombra:"Resistência ao que já começou a mudar."
+},
+{
+nome:"A Justiça",
+img:"img/justica.jpg",
+luz:"A verdade se equilibra. Cada ação encontra sua consequência.",
+sombra:"Negação da verdade ou desequilíbrio interno."
+},
+{
+nome:"O Enforcado",
+img:"img/enforcado.jpg",
+luz:"Uma pausa forçada traz nova perspectiva. É preciso olhar diferente.",
+sombra:"Estagnação e sensação de sacrifício inútil."
+},
+{
+nome:"A Morte",
+img:"img/morte.jpg",
+luz:"Um ciclo se encerra para que outro possa começar. Transformação profunda.",
+sombra:"Apego ao que já terminou."
+},
+{
+nome:"A Temperança",
+img:"img/temperanca.jpg",
+luz:"Harmonia e integração. O equilíbrio está sendo restaurado.",
+sombra:"Descompasso e excesso em alguma área."
+},
+{
+nome:"O Diabo",
+img:"img/diabo.jpg",
+luz:"Consciência sobre desejos e vínculos. O que te prende também te revela.",
+sombra:"Aprisionamento, vícios ou ilusões."
+},
+{
+nome:"A Torre",
+img:"img/torre.jpg",
+luz:"Uma ruptura necessária expõe a verdade. Libertação através do colapso.",
+sombra:"Queda provocada por resistência ou negação."
+},
+{
+nome:"A Estrela",
+img:"img/estrela.jpg",
+luz:"Um sopro de esperança e renovação espiritual.",
+sombra:"Desânimo ou perda de fé."
+},
+{
+nome:"A Lua",
+img:"img/lua.jpg",
+luz:"O inconsciente se manifesta. Nem tudo é o que parece.",
+sombra:"Confusão, medo ou autoengano."
+},
+{
+nome:"O Sol",
+img:"img/sol.jpg",
+luz:"Clareza, vitalidade e verdade iluminada.",
+sombra:"Excesso de confiança ou cegueira."
+},
+{
+nome:"O Julgamento",
+img:"img/julgamento.jpg",
+luz:"Um chamado para despertar. Algo pede renascimento.",
+sombra:"Evitar uma transformação inevitável."
+},
+{
+nome:"O Mundo",
+img:"img/mundo.jpg",
+luz:"Conclusão, integração e realização plena.",
+sombra:"Sensação de incompletude ou ciclo mal encerrado."
+}
+];
+
+const posicoes = [
+"Véu Presente","Força que Cruza","Raiz Oculta","Sombra do Passado",
+"Eco do Destino","Portal Imediato","Espelho do Eu","Correntes do Mundo",
+"Abismo e Luz","Selo do Desfecho"
+];
+
+let spread=[];
+
+function shuffle(array){
+  return array.sort(()=>Math.random()-0.5);
+}
+
+function iniciar(){
+  const board=document.getElementById("board");
+  board.innerHTML="";
+  document.getElementById("output").innerHTML =
+  "<p><em>Concentre-se... o oráculo começa a se alinhar...</em></p>";
+
+  spread = shuffle([...cards]).slice(0,10);
+
+  spread.forEach((c,i)=>{
+    const div=document.createElement("div");
+    div.className="card pos"+i;
+
+    div.innerHTML = `<img src="img/verso.jpg">`;
+
+    div.onclick=()=>revelar(div,c,posicoes[i]);
+
+    board.appendChild(div);
+  });
+}
+
+function revelar(div,carta,pos){
+  if(div.classList.contains("revealed")) return;
+
+  div.classList.add("revealed");
+
+  const invertida = Math.random() < 0.5;
+
+  if(invertida){
+    div.style.transform += " rotate(180deg)";
+  }
+
+  div.innerHTML = `<img src="${carta.img}">`;
+
+  let energia = invertida ? carta.sombra : carta.luz;
+
+  document.getElementById("output").innerHTML += `
+  <p><strong>${pos}</strong></p>
+  <p><strong>${carta.nome}</strong>${invertida ? " (invertida)" : ""}</p>
+  <p>${energia}</p>
+  <hr>
+  `;
+}
+
+</script>
+
+</body>
+</html>
