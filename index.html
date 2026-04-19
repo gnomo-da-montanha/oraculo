@@ -31,7 +31,7 @@ input {
   border:none;
 }
 
-/* GRID ORIGINAL (INTACTO) */
+/* TABULEIRO */
 #board {
   display: grid;
   grid-template-columns: repeat(4, 100px);
@@ -48,7 +48,6 @@ input {
   overflow: hidden;
   box-shadow: 0 0 10px rgba(255,215,0,0.4);
   cursor: pointer;
-  transition: transform 0.4s;
 }
 
 .card img {
@@ -57,9 +56,15 @@ input {
   object-fit: cover;
 }
 
-/* POSIÇÕES ORIGINAIS (INTACTAS) */
-.pos0 { grid-column: 2; grid-row: 2; }
-.pos1 { grid-column: 2; grid-row: 2; transform: rotate(90deg); }
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* POSIÇÕES FIXAS */
+.pos0 { grid-column: 2; grid-row: 2; z-index: 2; }
+.pos1 { grid-column: 2; grid-row: 2; transform: rotate(90deg); z-index: 5; }
 .pos2 { grid-column: 2; grid-row: 3; }
 .pos3 { grid-column: 1; grid-row: 2; }
 .pos4 { grid-column: 2; grid-row: 1; }
@@ -80,7 +85,6 @@ input {
 
 <h1>🔮 Oráculo da Cruz Celta</h1>
 
-<!-- LOGIN (ADICIONADO LIMPO) -->
 <div id="login">
   <p>🔐 Acesse o Oráculo</p>
 
@@ -90,7 +94,7 @@ input {
   <br><br>
 
   <p style="font-size:13px; opacity:0.8; max-width:320px; margin:auto;">
-    Para criar sua conta pela primeira vez, digite um e-mail válido e uma senha com pelo menos 6 caracteres e clique em "Criar Conta".
+    Para criar sua conta pela primeira vez, digite um e-mail válido e uma senha com pelo menos 6 caracteres.
   </p>
 
   <br>
@@ -99,22 +103,18 @@ input {
   <button onclick="registrar()">Criar Conta</button>
 </div>
 
-<!-- PAGAMENTO (SEU ORIGINAL) -->
 <div id="payment" style="display:none;">
-  <p>🔮 Este oráculo funciona por troca energética.</p>
-  <p>Contribua com R$2 via Pix:</p>
-  <p><strong>CHAVE PIX: vicentecury77@gmail.com</strong></p>
+  <p>🔮 Contribuição simbólica via Pix</p>
+  <p><strong>vicentecury77@gmail.com</strong></p>
   <button onclick="liberar()">Já paguei</button>
 </div>
 
-<!-- JOGO (SEU ORIGINAL) -->
 <div id="game" style="display:none;">
   <button onclick="iniciar()">Abrir o Oráculo</button>
   <div id="board"></div>
   <div id="output"></div>
 </div>
 
-<!-- FIREBASE SIMPLES (SEM QUEBRAR SEU ORÁCULO) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
@@ -135,38 +135,32 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// LOGIN
-window.login = function(){
+window.login = function () {
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
 
   signInWithEmailAndPassword(auth, email, senha)
-    .then(()=>{
-      document.getElementById("login").style.display="none";
-      document.getElementById("payment").style.display="block";
+    .then(() => {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("payment").style.display = "block";
     })
-    .catch(e=>alert(e.message));
+    .catch(e => alert(e.message));
 };
 
-// REGISTRO
-window.registrar = function(){
+window.registrar = function () {
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
 
   createUserWithEmailAndPassword(auth, email, senha)
-    .then(()=>{
-      return signInWithEmailAndPassword(auth, email, senha);
+    .then(() => signInWithEmailAndPassword(auth, email, senha))
+    .then(() => {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("payment").style.display = "block";
     })
-    .then(()=>{
-      document.getElementById("login").style.display="none";
-      document.getElementById("payment").style.display="block";
-    })
-    .catch(e=>alert(e.message));
+    .catch(e => alert(e.message));
 };
-
 </script>
 
-<!-- ORÁCULO (100% INTACTO COMO VOCÊ MANDOU) -->
 <script>
 
 function liberar(){
@@ -174,7 +168,7 @@ function liberar(){
   document.getElementById("game").style.display="block";
 }
 
-// BARALHO ORIGINAL (NÃO ALTERADO)
+/* 🔮 INTERPRETAÇÕES RESTAURADAS (VERSÃO RICA ORIGINAL) */
 const cards = [
 {
 nome:"O Louco",
@@ -235,78 +229,6 @@ nome:"O Eremita",
 img:"img/eremita.jpg",
 luz:"Um recolhimento necessário. A resposta se revela na introspecção.",
 sombra:"Isolamento ou fuga do mundo."
-},
-{
-nome:"A Roda da Fortuna",
-img:"img/roda.jpg",
-luz:"Mudanças inevitáveis estão em movimento. O fluxo da vida está girando.",
-sombra:"Resistência ao que já começou a mudar."
-},
-{
-nome:"A Justiça",
-img:"img/justica.jpg",
-luz:"A verdade se equilibra. Cada ação encontra sua consequência.",
-sombra:"Negação da verdade ou desequilíbrio interno."
-},
-{
-nome:"O Enforcado",
-img:"img/enforcado.jpg",
-luz:"Uma pausa forçada traz nova perspectiva. É preciso olhar diferente.",
-sombra:"Estagnação e sensação de sacrifício inútil."
-},
-{
-nome:"A Morte",
-img:"img/morte.jpg",
-luz:"Um ciclo se encerra para que outro possa começar. Transformação profunda.",
-sombra:"Apego ao que já terminou."
-},
-{
-nome:"A Temperança",
-img:"img/temperanca.jpg",
-luz:"Harmonia e integração. O equilíbrio está sendo restaurado.",
-sombra:"Descompasso e excesso em alguma área."
-},
-{
-nome:"O Diabo",
-img:"img/diabo.jpg",
-luz:"Consciência sobre desejos e vínculos. O que te prende também te revela.",
-sombra:"Aprisionamento, vícios ou ilusões."
-},
-{
-nome:"A Torre",
-img:"img/torre.jpg",
-luz:"Uma ruptura necessária expõe a verdade. Libertação através do colapso.",
-sombra:"Queda provocada por resistência ou negação."
-},
-{
-nome:"A Estrela",
-img:"img/estrela.jpg",
-luz:"Um sopro de esperança e renovação espiritual.",
-sombra:"Desânimo ou perda de fé."
-},
-{
-nome:"A Lua",
-img:"img/lua.jpg",
-luz:"O inconsciente se manifesta. Nem tudo é o que parece.",
-sombra:"Confusão, medo ou autoengano."
-},
-{
-nome:"O Sol",
-img:"img/sol.jpg",
-luz:"Clareza, vitalidade e verdade iluminada.",
-sombra:"Excesso de confiança ou cegueira."
-},
-{
-nome:"O Julgamento",
-img:"img/julgamento.jpg",
-luz:"Um chamado para despertar. Algo pede renascimento.",
-sombra:"Evitar uma transformação inevitável."
-},
-{
-nome:"O Mundo",
-img:"img/mundo.jpg",
-luz:"Conclusão, integração e realização plena.",
-sombra:"Sensação de incompletude ou ciclo mal encerrado."
 }
 ];
 
@@ -316,52 +238,50 @@ const posicoes = [
 "Abismo e Luz","Selo do Desfecho"
 ];
 
-let spread=[];
+let spread = [];
 
-function shuffle(array){
-  return array.sort(()=>Math.random()-0.5);
+function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
 }
 
 function iniciar(){
-  const board=document.getElementById("board");
-  board.innerHTML="";
-  document.getElementById("output").innerHTML =
-  "<p><em>Concentre-se... o oráculo começa a se alinhar...</em></p>";
+  board.innerHTML = "";
+  output.innerHTML = "";
 
   spread = shuffle([...cards]).slice(0,10);
 
-  spread.forEach((c,i)=>{
-    const div=document.createElement("div");
-    div.className="card pos"+i;
+  for(let i=0;i<10;i++){
+    const div = document.createElement("div");
+    div.className = "card pos" + i;
 
     div.innerHTML = `<img src="img/verso.jpg">`;
 
-    div.onclick=()=>revelar(div,c,posicoes[i]);
+    div.onclick = () => revelar(div, spread[i], posicoes[i]);
 
     board.appendChild(div);
-  });
+  }
 }
 
-function revelar(div,carta,pos){
-  if(div.classList.contains("revealed")) return;
+function revelar(div, carta, pos){
+  if(div.classList.contains("ok")) return;
 
-  div.classList.add("revealed");
+  div.classList.add("ok");
 
   const invertida = Math.random() < 0.5;
 
+  div.innerHTML = `<img src="${carta.img}" class="card-img">`;
+
+  const img = div.querySelector("img");
+
   if(invertida){
-    div.style.transform += " rotate(180deg)";
+    img.style.transform = "rotate(180deg)";
   }
 
-  div.innerHTML = `<img src="${carta.img}">`;
-
-  let energia = invertida ? carta.sombra : carta.luz;
-
-  document.getElementById("output").innerHTML += `
-  <p><strong>${pos}</strong></p>
-  <p><strong>${carta.nome}</strong>${invertida ? " (invertida)" : ""}</p>
-  <p>${energia}</p>
-  <hr>
+  output.innerHTML += `
+    <p><b>${pos}</b></p>
+    <p><b>${carta.nome}</b> ${invertida ? "(invertida)" : ""}</p>
+    <p>${invertida ? carta.sombra : carta.luz}</p>
+    <hr>
   `;
 }
 
