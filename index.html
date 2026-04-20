@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Oráculo da Cruz Celta</title>
+<title>Tarot Online - Oráculo da Cruz Celta</title>
 
 <style>
 body {
@@ -76,12 +76,21 @@ input {
   max-width: 700px;
   margin: 20px auto;
 }
+
+/* 🔥 NOVO: área do PIX */
+#pixArea {
+  margin-top: 15px;
+}
+#pixArea img {
+  width: 200px;
+  margin-top: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🔮 Oráculo da Cruz Celta</h1>
+<h1>🔮 Tarot Online - Oráculo da Cruz Celta</h1>
 
 <div id="login">
  <p>🔐 Acesse o Oráculo</p>
@@ -95,8 +104,8 @@ input {
   Para criar sua conta pela primeira vez, digite um e-mail válido e uma senha com pelo menos 6 caracteres.
 </p>
 
-  <button onclick="login()">Entrar</button>
-  <button onclick="registrar()">Criar Conta</button>
+<button onclick="login()">Entrar</button>
+<button onclick="registrar()">Criar Conta</button>
 </div>
 
 <div id="payment" style="display:none;">
@@ -104,6 +113,13 @@ input {
   <p><strong>R$ 5,00 por consulta</strong></p>
 
   <button onclick="pagarPagSeguro()">Pagar e liberar leitura</button>
+
+  <!-- 🔥 NOVO: PIX -->
+  <div id="pixArea" style="display:none;">
+    <p>Escaneie o PIX:</p>
+    <img id="pixQr" src="">
+    <p id="pixCode" style="font-size:12px; word-break:break-all;"></p>
+  </div>
 </div>
 
 <div id="game" style="display:none;">
@@ -165,15 +181,13 @@ let spread = [];
 let pagando = false;
 let executando = false;
 
-/* =========================
-   PAGAMENTO
-   ========================= */
+/* PAGAMENTO REAL + PIX */
 function pagarPagSeguro(){
 
   if(pagando) return;
   pagando = true;
 
-  fetch("https://oraculo-backend-spif.onrender.com/payment-confirmed", {
+  fetch("https://oraculo-backend-spif.onrender.com/criar-pagamento", {
     method: "POST"
   })
   .then(r => r.json())
@@ -186,6 +200,12 @@ function pagarPagSeguro(){
       return;
     }
 
+    // 🔥 MOSTRAR PIX
+    document.getElementById("pixArea").style.display = "block";
+    document.getElementById("pixQr").src = data.qr;
+    document.getElementById("pixCode").innerText = data.pix;
+
+    // 🔥 LIBERA O JOGO (depois você pode travar até confirmar pagamento)
     document.getElementById("payment").style.display = "none";
     document.getElementById("game").style.display = "block";
 
@@ -197,9 +217,7 @@ function pagarPagSeguro(){
   .finally(() => pagando = false);
 }
 
-/* =========================
-   INICIAR
-   ========================= */
+/* INICIAR */
 function iniciar(){
 
   if(executando) return;
@@ -225,7 +243,7 @@ function iniciar(){
       alert("Pagamento necessário para nova leitura.");
       document.getElementById("game").style.display = "none";
       document.getElementById("payment").style.display = "block";
-      executando = false;   // 🔧 CORREÇÃO IMPORTANTE
+      executando = false;
       return;
     }
 
@@ -245,9 +263,7 @@ function iniciar(){
   .finally(() => executando = false);
 }
 
-/* =========================
-   ORÁCULO
-   ========================= */
+/* ORÁCULO */
 function iniciarOraculoReal(){
 
   const board = document.getElementById("board");
@@ -263,7 +279,6 @@ function iniciarOraculoReal(){
     div.className = "card pos" + i;
 
     div.innerHTML = `<img src="img/verso.jpg">`;
-
     div.onclick = () => revelar(div, spread[i], posicoes[i]);
 
     board.appendChild(div);
