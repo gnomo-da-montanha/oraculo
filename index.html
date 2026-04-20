@@ -115,7 +115,7 @@ input {
 
   <div id="pixArea" style="display:none;">
     <p>Escaneie o PIX:</p>
-    <img id="pixQr" src="">
+    <img id="pixQr">
     <p id="pixCode" style="font-size:12px; word-break:break-all;"></p>
 
     <button onclick="confirmarPagamento()">Já paguei</button>
@@ -137,12 +137,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAgFtlDzZDbiiQEuiSvFu0sXVLECEqjUrM",
-  authDomain: "tarot-online-887e3.firebaseapp.com",
-  projectId: "tarot-online-887e3",
-  storageBucket: "tarot-online-887e3.firebasestorage.app",
-  messagingSenderId: "345473207369",
-  appId: "1:345473207369:web:86ca31f5734ac20d728398"
+  apiKey: "SUA_KEY",
+  authDomain: "SEU_DOMINIO",
+  projectId: "SEU_PROJETO",
+  appId: "SEU_APP"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -181,6 +179,11 @@ let spread = [];
 let pagando = false;
 let executando = false;
 
+/* 🔀 EMBARALHAR */
+function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
+}
+
 /* PAGAMENTO */
 function pagarPagSeguro(){
 
@@ -193,7 +196,7 @@ function pagarPagSeguro(){
   .then(r => r.json())
   .then(data => {
 
-    readId = data.readId; // ✅ CORRIGIDO
+    readId = data.readId;
 
     document.getElementById("pixArea").style.display = "block";
     document.getElementById("pixQr").src = data.qr;
@@ -207,7 +210,7 @@ function pagarPagSeguro(){
   .finally(() => pagando = false);
 }
 
-/* CONFIRMAR PAGAMENTO */
+/* CONFIRMAR */
 function confirmarPagamento(){
 
   fetch("https://oraculo-backend-spif.onrender.com/confirmar-pagamento", {
@@ -219,9 +222,7 @@ function confirmarPagamento(){
     document.getElementById("payment").style.display = "none";
     document.getElementById("game").style.display = "block";
   })
-  .catch(() => {
-    alert("Erro ao confirmar pagamento.");
-  });
+  .catch(() => alert("Erro ao confirmar pagamento."));
 }
 
 /* INICIAR */
@@ -239,10 +240,9 @@ function iniciar(){
   .then(res => {
 
     if(!res.valid){
-      alert("Pagamento necessário para nova leitura.");
+      alert("Pagamento necessário.");
       document.getElementById("game").style.display = "none";
       document.getElementById("payment").style.display = "block";
-      executando = false;
       return;
     }
 
@@ -258,7 +258,7 @@ function iniciar(){
   .finally(() => executando = false);
 }
 
-/* ORÁCULO (INALTERADO) */
+/* ORÁCULO */
 function iniciarOraculoReal(){
 
   const board = document.getElementById("board");
@@ -280,7 +280,6 @@ function iniciarOraculoReal(){
   }
 }
 
-/* resto permanece igual */
 </script>
 
 </body>
