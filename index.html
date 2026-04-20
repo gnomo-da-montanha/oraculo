@@ -128,7 +128,56 @@ input {
   <div id="output"></div>
 </div>
 
+<!-- 🔥 FIREBASE (LOGIN) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAgFtlDzZDbiiQEuiSvFu0sXVLECEqjUrM",
+  authDomain: "tarot-online-887e3.firebaseapp.com",
+  projectId: "tarot-online-887e3",
+  storageBucket: "tarot-online-887e3.firebasestorage.app",
+  messagingSenderId: "345473207369",
+  appId: "1:345473207369:web:86ca31f5734ac20d728398"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.login = function () {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(() => {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("payment").style.display = "block";
+    })
+    .catch(e => alert(e.message));
+};
+
+window.registrar = function () {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then(() => signInWithEmailAndPassword(auth, email, senha))
+    .then(() => {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("payment").style.display = "block";
+    })
+    .catch(e => alert(e.message));
+};
+</script>
+
+<!-- 🔮 SCRIPT DO ORÁCULO -->
 <script>
+
 let readId = null;
 let spread = [];
 let pagando = false;
@@ -146,7 +195,7 @@ function pagarPagSeguro(){
   .then(r => r.json())
   .then(data => {
 
-    readId = data.referenceId; // 🔥 CORREÇÃO
+    readId = data.referenceId;
 
     document.getElementById("pixArea").style.display = "block";
     document.getElementById("pixQr").src = data.qr;
@@ -222,8 +271,52 @@ function iniciarOraculoReal(){
   }
 }
 
-/* RESTO TOTALMENTE INTACTO */
-const cards = [ ... ]; // (mantém exatamente como você já tinha)
+/* CARTAS (INALTERADO) */
+const cards = [
+{nome:"O Louco",img:"img/louco.jpg",luz:"Um chamado para abandonar o controle e atravessar o desconhecido. A vida exige um salto que não pode ser calculado.",sombra:"Um movimento impulsivo ou fuga da realidade. Você pode estar avançando sem ver onde pisa."},
+{nome:"O Mago",img:"img/mago.jpg",luz:"Você tem em mãos os instrumentos necessários. A realidade pode ser moldada pela sua intenção.",sombra:"Manipulação, ilusão ou tentativa de controlar demais a situação."},
+{nome:"A Sacerdotisa",img:"img/sacerdotisa.jpg",luz:"Há algo sendo revelado no silêncio. A resposta não está fora, mas dentro de você.",sombra:"Negação da própria intuição. Você já percebe, mas evita encarar."},
+{nome:"A Imperatriz",img:"img/imperatriz.jpg",luz:"Um ciclo de crescimento e criação se abre. Algo quer nascer através de você.",sombra:"Excesso, acomodação ou apego ao conforto."},
+{nome:"O Imperador",img:"img/imperador.jpg",luz:"É hora de estruturar, assumir controle e estabelecer ordem.",sombra:"Rigidez, controle excessivo ou imposição sobre os outros."},
+{nome:"O Hierofante",img:"img/hierofante.jpg",luz:"Existe sabedoria em tradições e caminhos já trilhados. Um ensinamento pode ser acessado.",sombra:"Dogma, crenças limitantes ou submissão cega."},
+{nome:"Os Enamorados",img:"img/enamorados.jpg",luz:"Uma escolha alinhada com a verdade do seu coração se apresenta.",sombra:"Indecisão profunda ou conflito interno."},
+{nome:"O Carro",img:"img/carro.jpg",luz:"A direção está clara. Avançar agora é necessário.",sombra:"Falta de controle ou avanço sem direção."},
+{nome:"A Força",img:"img/forca.jpg",luz:"Domínio interior. A verdadeira força nasce do equilíbrio emocional.",sombra:"Explosões emocionais ou repressão excessiva."},
+{nome:"O Eremita",img:"img/eremita.jpg",luz:"Um recolhimento necessário. A resposta se revela na introspecção.",sombra:"Isolamento ou fuga do mundo."}
+];
+
+const posicoes = [
+"Véu Presente","Força que Cruza","Raiz Oculta","Sombra do Passado",
+"Eco do Destino","Portal Imediato","Espelho do Eu","Correntes do Mundo",
+"Abismo e Luz","Selo do Desfecho"
+];
+
+function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
+}
+
+function revelar(div, carta, pos){
+  if(div.classList.contains("ok")) return;
+
+  div.classList.add("ok");
+
+  const invertida = Math.random() < 0.5;
+
+  div.innerHTML = `<img src="${carta.img}" class="card-img">`;
+
+  const img = div.querySelector("img");
+
+  if(invertida){
+    img.style.transform = "rotate(180deg)";
+  }
+
+  document.getElementById("output").innerHTML += `
+    <p><b>${pos}</b></p>
+    <p><b>${carta.nome}</b> ${invertida ? "(invertida)" : ""}</p>
+    <p>${invertida ? carta.sombra : carta.luz}</p>
+    <hr>
+  `;
+}
 
 </script>
 
