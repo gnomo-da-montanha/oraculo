@@ -118,7 +118,7 @@ input {
     <img id="pixQr">
     <p id="pixCode" style="font-size:12px; word-break:break-all;"></p>
 
-    <button onclick="confirmarPagamento()">Já paguei</button>
+    
   </div>
 </div>
 
@@ -192,29 +192,67 @@ function pagarPagSeguro(){
   pagando = true;
 
   fetch("https://oraculo-backend-spif.onrender.com/criar-pagamento", {
-    method: "POST"
+    method: "POST",
+    headers: {"Content-Type": "application/json"}
   })
   .then(r => r.json())
   .then(data => {
-    readId = data.readId;
+
+    readId = data.orderId;
+
+    const qrImg = data.qrCodeImage;
+    const pix = data.pixCode;
+
     document.getElementById("pixArea").style.display = "block";
-    document.getElementById("pixQr").src = data.qr;
-    document.getElementById("pixCode").innerText = data.pix;
+
+    // QR CODE
+    document.getElementById("pixQr").src = qrImg;
+
+    // CÓDIGO PIX
+    document.getElementById("pixCode").innerText = pix;
+
+    // BOTÃO COPIAR (criado dinamicamente)
+    if(!document.getElementById("copyBtn")){
+      const btn = document.createElement("button");
+      btn.id = "copyBtn";
+      btn.innerText = "Copiar código PIX";
+      btn.onclick = () => {
+        navigator.clipboard.writeText(pix);
+        alert("PIX copiado!");
+      };
+      document.getElementById("pixArea").appendChild(btn);
+    }
+
+    iniciarVerificacaoPagamento();
+
   })
-  .catch(() => alert("Erro ao gerar PIX."))
   .finally(() => pagando = false);
 }
 
-function confirmarPagamento(){
-  fetch("https://oraculo-backend-spif.onrender.com/confirmar-pagamento", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ readId })
-  })
-  .then(() => {
-    document.getElementById("payment").style.display = "none";
-    document.getElementById("game").style.display = "block";
-  });
+function iniciarVerificacaoPagamento(){
+  const intervalo = setInterval(() => {
+
+    fetch("https://oraculo-backend-spif.onrender.com/check-read", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ readId })
+    })
+    .then(r => r.json())
+    .then(res => {
+
+      if(res.valid){
+        clearInterval(intervalo);
+
+        document.getElementById("payment").style.display = "none";
+        document.getElementById("game").style.display = "block";
+
+        iniciarOraculoReal();
+      }
+
+    })
+    .catch(() => {});
+
+  }, 3000); // a cada 3 segundos
 }
 
 function iniciar(){
