@@ -241,13 +241,13 @@ function iniciarVerificacaoPagamento(){
     .then(res => {
 
       if(res.valid){
-        clearInterval(intervalo);
+  clearInterval(intervalo);
 
-        document.getElementById("payment").style.display = "none";
-        document.getElementById("game").style.display = "block";
+  document.getElementById("payment").style.display = "none";
+  document.getElementById("game").style.display = "block";
 
-        iniciarOraculoReal();
-      }
+  alert("Pagamento confirmado! Clique em 'Abrir o Oráculo'");
+}
 
     })
     .catch(() => {});
