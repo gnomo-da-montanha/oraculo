@@ -100,7 +100,7 @@ input {
 <br><br>
 
 <p style="font-size:13px; opacity:0.8; max-width:320px; margin:auto;">
-  Para criar sua, basta digitar um e-mail válido e uma senha com pelo menos 6 caracteres.
+  Para criar sua conta pela primeira vez, digite um e-mail válido e uma senha com pelo menos 6 caracteres.
 </p>
 
 <button onclick="login()">Entrar</button>
@@ -123,9 +123,10 @@ input {
 </div>
 
 <div id="game" style="display:none;">
-  <button id="liberarBtn" onclick="iniciar()" style="display:none;">
-  Abrir o Oráculo
-</button>
+  <button onclick="iniciar()">Abrir o Oráculo</button>
+  <div id="board"></div>
+  <div id="output"></div>
+</div>
 
 <!-- 🔥 FIREBASE -->
 <script type="module">
@@ -240,13 +241,13 @@ function iniciarVerificacaoPagamento(){
     .then(res => {
 
       if(res.valid){
-  clearInterval(intervalo);
+        clearInterval(intervalo);
 
-  document.getElementById("payment").style.display = "none";
-  document.getElementById("game").style.display = "block";
+        document.getElementById("payment").style.display = "none";
+        document.getElementById("game").style.display = "block";
 
-  alert("Pagamento confirmado! Clique em 'Abrir o Oráculo'");
-}
+        iniciarOraculoReal();
+      }
 
     })
     .catch(() => {});
@@ -267,7 +268,9 @@ function iniciar(){
   .then(res => {
 
     if(!res.valid){
-      alert("Pagamento ainda não confirmado.");
+      alert("Pagamento necessário.");
+      document.getElementById("game").style.display = "none";
+      document.getElementById("payment").style.display = "block";
       return;
     }
 
@@ -282,11 +285,8 @@ function iniciar(){
   })
   .finally(() => executando = false);
 }
-  .finally(() => executando = false);
-}
 
-function // NÃO abre automático
-document.getElementById("liberarBtn").style.display = "block";
+function iniciarOraculoReal(){
   const board = document.getElementById("board");
   const output = document.getElementById("output");
 
