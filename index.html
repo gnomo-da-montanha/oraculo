@@ -100,7 +100,7 @@ input {
 <br><br>
 
 <p style="font-size:13px; opacity:0.8; max-width:320px; margin:auto;">
-Para criar sua conta, basta digitar um e-mail válido e uma senha com pelo menos 6 caracteres.
+  Para criar sua, basta digitar um e-mail válido e uma senha com pelo menos 6 caracteres.
 </p>
 
 <button onclick="login()">Entrar</button>
@@ -117,19 +117,17 @@ Para criar sua conta, basta digitar um e-mail válido e uma senha com pelo menos
     <p>Escaneie o PIX:</p>
     <img id="pixQr">
     <p id="pixCode" style="font-size:12px; word-break:break-all;"></p>
+
+    
   </div>
 </div>
 
 <div id="game" style="display:none;">
   <button id="liberarBtn" onclick="iniciar()" style="display:none;">
-    Abrir o Oráculo
-  </button>
+  Abrir o Oráculo
+</button>
 
-  <div id="board"></div>
-  <div id="output"></div>
-</div>
-
-<!-- FIREBASE -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
@@ -176,7 +174,9 @@ window.registrar = function () {
 };
 </script>
 
+<!-- 🔮 SCRIPT -->
 <script>
+
 let readId = null;
 let spread = [];
 let pagando = false;
@@ -186,7 +186,6 @@ function shuffle(arr){
   return arr.sort(() => Math.random() - 0.5);
 }
 
-/* PAGAMENTO */
 function pagarPagSeguro(){
   if(pagando) return;
   pagando = true;
@@ -200,16 +199,35 @@ function pagarPagSeguro(){
 
     readId = data.orderId;
 
+    const qrImg = data.qrCodeImage;
+    const pix = data.pixCode;
+
     document.getElementById("pixArea").style.display = "block";
-    document.getElementById("pixQr").src = data.qrCodeImage;
-    document.getElementById("pixCode").innerText = data.pixCode;
+
+    // QR CODE
+    document.getElementById("pixQr").src = qrImg;
+
+    // CÓDIGO PIX
+    document.getElementById("pixCode").innerText = pix;
+
+    // BOTÃO COPIAR (criado dinamicamente)
+    if(!document.getElementById("copyBtn")){
+      const btn = document.createElement("button");
+      btn.id = "copyBtn";
+      btn.innerText = "Copiar código PIX";
+      btn.onclick = () => {
+        navigator.clipboard.writeText(pix);
+        alert("PIX copiado!");
+      };
+      document.getElementById("pixArea").appendChild(btn);
+    }
 
     iniciarVerificacaoPagamento();
+
   })
   .finally(() => pagando = false);
 }
 
-/* VERIFICAÇÃO */
 function iniciarVerificacaoPagamento(){
   const intervalo = setInterval(() => {
 
@@ -222,22 +240,20 @@ function iniciarVerificacaoPagamento(){
     .then(res => {
 
       if(res.valid){
-        clearInterval(intervalo);
+  clearInterval(intervalo);
 
-        document.getElementById("payment").style.display = "none";
-        document.getElementById("game").style.display = "block";
+  document.getElementById("payment").style.display = "none";
+  document.getElementById("game").style.display = "block";
 
-        document.getElementById("liberarBtn").style.display = "block";
-
-        alert("Pagamento confirmado! Clique para abrir o Oráculo.");
-      }
-
-    });
-
-  }, 3000);
+  alert("Pagamento confirmado! Clique em 'Abrir o Oráculo'");
 }
 
-/* INICIAR */
+    })
+    .catch(() => {});
+
+  }, 3000); // a cada 3 segundos
+}
+
 function iniciar(){
   if(executando) return;
   executando = true;
@@ -266,9 +282,11 @@ function iniciar(){
   })
   .finally(() => executando = false);
 }
+  .finally(() => executando = false);
+}
 
-/* ORÁCULO */
-function iniciarOraculoReal(){
+function // NÃO abre automático
+document.getElementById("liberarBtn").style.display = "block";
   const board = document.getElementById("board");
   const output = document.getElementById("output");
 
@@ -330,6 +348,7 @@ function revelar(div, carta, pos){
     <hr>
   `;
 }
+
 </script>
 
 </body>
