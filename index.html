@@ -192,6 +192,20 @@ function pagarPagSeguro(){
     document.getElementById("pixQr").src = data.qrCodeImage;
     document.getElementById("pixCode").innerText = data.pixCode;
 
+// botão copiar (recriado)
+if(!document.getElementById("copyBtn")){
+  const btn = document.createElement("button");
+  btn.id = "copyBtn";
+  btn.innerText = "Copiar código PIX";
+
+  btn.onclick = () => {
+    navigator.clipboard.writeText(data.pixCode);
+    alert("PIX copiado!");
+  };
+
+  document.getElementById("pixArea").appendChild(btn);
+}
+
     iniciarVerificacaoPagamento();
   })
   .catch(err => {
