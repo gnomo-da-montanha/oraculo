@@ -115,6 +115,53 @@ Para criar sua conta, basta digitar um e-mail válido e uma senha com pelo menos
   <div id="output"></div>
 </div>
 
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAgFtlDzZDbiiQEuiSvFu0sXVLECEqjUrM",
+  authDomain: "tarot-online-887e3.firebaseapp.com",
+  projectId: "tarot-online-887e3",
+  storageBucket: "tarot-online-887e3.firebasestorage.app",
+  messagingSenderId: "345473207369",
+  appId: "1:345473207369:web:86ca31f5734ac20d728398"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.login = function () {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(() => {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("payment").style.display = "block";
+    })
+    .catch(e => alert(e.message));
+};
+
+window.registrar = function () {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then(() => signInWithEmailAndPassword(auth, email, senha))
+    .then(() => {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("payment").style.display = "block";
+    })
+    .catch(e => alert(e.message));
+};
+</script>
+
 <script>
 
 let readId = null;
@@ -126,6 +173,10 @@ function shuffle(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+function iniciar(){
+  iniciarOraculoReal();
 }
 
 function iniciarOraculoReal(){
