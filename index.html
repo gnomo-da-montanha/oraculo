@@ -163,10 +163,78 @@ window.registrar = function () {
 </script>
 
 <script>
-
 let readId = null;
+let pagando = false;
+let intervaloPagamento = null;
 let spread = [];
 
+/* =========================
+   PAGAMENTO PIX
+========================= */
+function pagarPagSeguro(){
+  if(pagando) return;
+
+  pagando = true;
+  readId = null;
+
+  fetch("https://oraculo-backend-spif.onrender.com/criar-pagamento", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"}
+  })
+  .then(r => r.json())
+  .then(data => {
+
+    console.log("PIX DATA:", data);
+
+    readId = data.orderId;
+
+    document.getElementById("pixArea").style.display = "block";
+    document.getElementById("pixQr").src = data.qrCodeImage;
+    document.getElementById("pixCode").innerText = data.pixCode;
+
+    iniciarVerificacaoPagamento();
+  })
+  .catch(err => {
+    console.error("ERRO PIX:", err);
+    alert("Erro ao gerar PIX");
+  })
+  .finally(() => pagando = false);
+}
+
+function iniciarVerificacaoPagamento(){
+  if(intervaloPagamento){
+    clearInterval(intervaloPagamento);
+  }
+
+  intervaloPagamento = setInterval(() => {
+
+    if(!readId) return;
+
+    fetch("https://oraculo-backend-spif.onrender.com/check-read", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ readId })
+    })
+    .then(r => r.json())
+    .then(res => {
+
+      if(res.valid){
+        clearInterval(intervaloPagamento);
+
+        document.getElementById("payment").style.display = "none";
+        document.getElementById("game").style.display = "block";
+
+        alert("Pagamento confirmado!");
+      }
+
+    });
+
+  }, 3000);
+}
+
+/* =========================
+   TAROT
+========================= */
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -199,6 +267,9 @@ function iniciarOraculoReal(){
   }
 }
 
+/* =========================
+   CARTAS COMPLETAS (22)
+========================= */
 const cards = [
 {nome:"O Louco",img:"img/louco.jpg",luz:"Um chamado para abandonar o controle e atravessar o desconhecido. Um novo ciclo se inicia, exigindo fé no invisível.",sombra:"Impulsividade, imprudência ou fuga da realidade. Caminhar sem consciência das consequências."},
 {nome:"O Mago",img:"img/mago.jpg",luz:"Você possui os recursos necessários para manifestar sua realidade. Ação consciente e intenção alinhada criam resultados.",sombra:"Manipulação, ilusão ou uso indevido do poder pessoal."},
@@ -250,7 +321,6 @@ function revelar(div, carta, pos){
     <hr>
   `;
 }
-
 </script>
 
 </body>
