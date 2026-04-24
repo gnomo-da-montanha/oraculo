@@ -55,6 +55,12 @@ input {
   object-fit: cover;
 }
 
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .pos0 { grid-column: 2; grid-row: 2; z-index: 2; }
 .pos1 { grid-column: 2; grid-row: 2; transform: rotate(90deg); z-index: 5; }
 .pos2 { grid-column: 2; grid-row: 3; }
@@ -71,6 +77,9 @@ input {
   margin: 20px auto;
 }
 
+#pixArea {
+  margin-top: 15px;
+}
 #pixArea img {
   width: 200px;
   margin-top: 10px;
@@ -83,29 +92,36 @@ input {
 <h1>🔮 Tarot Online - Oráculo da Cruz Celta</h1>
 
 <div id="login">
+ <p>🔐 Acesse o Oráculo</p>
+
+<input id="email" type="email" placeholder="Email">
+<br>
+<input id="senha" type="password" placeholder="Senha (mínimo 6 caracteres)">
+<br><br>
 
 <p style="font-size:13px; opacity:0.8; max-width:320px; margin:auto;">
-Para criar sua conta, basta digitar um e-mail válido e uma senha com pelo menos 6 caracteres.
+  Para criar sua conta pela primeira vez, digite um e-mail válido e uma senha com pelo menos 6 caracteres.
 </p>
-<br>
 
-<input id="email" type="email" placeholder="Email"><br>
-<input id="senha" type="password" placeholder="Senha"><br><br>
 <button onclick="login()">Entrar</button>
 <button onclick="registrar()">Criar Conta</button>
 </div>
 
 <div id="payment" style="display:none;">
+  <p>🔮 Pagamento por leitura</p>
   <p><strong>R$ 5,00 por consulta</strong></p>
-  <button onclick="pagarPagSeguro()">Gerar PIX</button>
 
+  <button onclick="pagarPagSeguro()">Gerar PIX</button>
   <p style="font-size:13px; opacity:0.8;">
     ⏳ O QR Code pode levar até 30 segundos para aparecer.
   </p>
 
   <div id="pixArea" style="display:none;">
+    <p>Escaneie o PIX:</p>
     <img id="pixQr">
-    <p id="pixCode"></p>
+    <p id="pixCode" style="font-size:12px; word-break:break-all;"></p>
+
+    
   </div>
 </div>
 
@@ -115,7 +131,7 @@ Para criar sua conta, basta digitar um e-mail válido e uma senha com pelo menos
   <div id="output"></div>
 </div>
 
-<!-- FIREBASE -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
@@ -162,20 +178,21 @@ window.registrar = function () {
 };
 </script>
 
+<!-- 🔮 SCRIPT -->
 <script>
-let readId = null;
-let pagando = false;
-let intervaloPagamento = null;
-let spread = [];
 
-/* =========================
-   PAGAMENTO PIX
-========================= */
+let readId = null;
+let spread = [];
+let pagando = false;
+let executando = false;
+
+function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
+}
+
 function pagarPagSeguro(){
   if(pagando) return;
-
   pagando = true;
-  readId = null;
 
   fetch("https://oraculo-backend-spif.onrender.com/criar-pagamento", {
     method: "POST",
@@ -184,45 +201,39 @@ function pagarPagSeguro(){
   .then(r => r.json())
   .then(data => {
 
-    console.log("PIX DATA:", data);
-
     readId = data.orderId;
 
+    const qrImg = data.qrCodeImage;
+    const pix = data.pixCode;
+
     document.getElementById("pixArea").style.display = "block";
-    document.getElementById("pixQr").src = data.qrCodeImage;
-    document.getElementById("pixCode").innerText = data.pixCode;
 
-// botão copiar (recriado)
-if(!document.getElementById("copyBtn")){
-  const btn = document.createElement("button");
-  btn.id = "copyBtn";
-  btn.innerText = "Copiar código PIX";
+    // QR CODE
+    document.getElementById("pixQr").src = qrImg;
 
-  btn.onclick = () => {
-    navigator.clipboard.writeText(data.pixCode);
-    alert("PIX copiado!");
-  };
+    // CÓDIGO PIX
+    document.getElementById("pixCode").innerText = pix;
 
-  document.getElementById("pixArea").appendChild(btn);
-}
+    // BOTÃO COPIAR (criado dinamicamente)
+    if(!document.getElementById("copyBtn")){
+      const btn = document.createElement("button");
+      btn.id = "copyBtn";
+      btn.innerText = "Copiar código PIX";
+      btn.onclick = () => {
+        navigator.clipboard.writeText(pix);
+        alert("PIX copiado!");
+      };
+      document.getElementById("pixArea").appendChild(btn);
+    }
 
     iniciarVerificacaoPagamento();
-  })
-  .catch(err => {
-    console.error("ERRO PIX:", err);
-    alert("Erro ao gerar PIX");
+
   })
   .finally(() => pagando = false);
 }
 
 function iniciarVerificacaoPagamento(){
-  if(intervaloPagamento){
-    clearInterval(intervaloPagamento);
-  }
-
-  intervaloPagamento = setInterval(() => {
-
-    if(!readId) return;
+  const intervalo = setInterval(() => {
 
     fetch("https://oraculo-backend-spif.onrender.com/check-read", {
       method: "POST",
@@ -233,32 +244,49 @@ function iniciarVerificacaoPagamento(){
     .then(res => {
 
       if(res.valid){
-        clearInterval(intervaloPagamento);
+        clearInterval(intervalo);
 
         document.getElementById("payment").style.display = "none";
         document.getElementById("game").style.display = "block";
 
-        alert("Pagamento confirmado!");
+        iniciarOraculoReal();
       }
 
-    });
+    })
+    .catch(() => {});
 
-  }, 3000);
-}
-
-/* =========================
-   TAROT
-========================= */
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+  }, 3000); // a cada 3 segundos
 }
 
 function iniciar(){
-  iniciarOraculoReal();
+  if(executando) return;
+  executando = true;
+
+  fetch("https://oraculo-backend-spif.onrender.com/check-read", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ readId })
+  })
+  .then(r => r.json())
+  .then(res => {
+
+    if(!res.valid){
+      alert("Pagamento necessário.");
+      document.getElementById("game").style.display = "none";
+      document.getElementById("payment").style.display = "block";
+      return;
+    }
+
+    iniciarOraculoReal();
+
+    fetch("https://oraculo-backend-spif.onrender.com/use-read", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ readId })
+    });
+
+  })
+  .finally(() => executando = false);
 }
 
 function iniciarOraculoReal(){
@@ -281,9 +309,7 @@ function iniciarOraculoReal(){
   }
 }
 
-/* =========================
-   CARTAS COMPLETAS (22)
-========================= */
+/* CARTAS */
 const cards = [
 {nome:"O Louco",img:"img/louco.jpg",luz:"Um chamado para abandonar o controle e atravessar o desconhecido. Um novo ciclo se inicia, exigindo fé no invisível.",sombra:"Impulsividade, imprudência ou fuga da realidade. Caminhar sem consciência das consequências."},
 {nome:"O Mago",img:"img/mago.jpg",luz:"Você possui os recursos necessários para manifestar sua realidade. Ação consciente e intenção alinhada criam resultados.",sombra:"Manipulação, ilusão ou uso indevido do poder pessoal."},
@@ -322,10 +348,12 @@ function revelar(div, carta, pos){
 
   const invertida = Math.random() < 0.5;
 
-  div.innerHTML = `<img src="${carta.img}">`;
+  div.innerHTML = `<img src="${carta.img}" class="card-img">`;
+
+  const img = div.querySelector("img");
 
   if(invertida){
-    div.querySelector("img").style.transform = "rotate(180deg)";
+    img.style.transform = "rotate(180deg)";
   }
 
   document.getElementById("output").innerHTML += `
@@ -335,6 +363,7 @@ function revelar(div, carta, pos){
     <hr>
   `;
 }
+
 </script>
 
 </body>
