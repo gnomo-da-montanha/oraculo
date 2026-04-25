@@ -126,8 +126,7 @@ input {
 </div>
 
 <div id="game" style="display:none;">
-  <button onclick="iniciar()">Abrir o Oráculo</button>
-  <div id="board"></div>
+   <div id="board"></div>
   <div id="output"></div>
 </div>
 
@@ -185,6 +184,7 @@ let readId = null;
 let spread = [];
 let pagando = false;
 let executando = false;
+let cartasViradas = 0;
 
 function shuffle(arr){
   return arr.sort(() => Math.random() - 0.5);
@@ -317,6 +317,7 @@ function iniciar(){
 }
 
 function iniciarOraculoReal(){
+cartasViradas = 0;
   const board = document.getElementById("board");
   const output = document.getElementById("output");
 
@@ -372,6 +373,11 @@ function revelar(div, carta, pos){
   if(div.classList.contains("ok")) return;
 
   div.classList.add("ok");
+  cartasViradas++;
+
+if(cartasViradas === 10){
+  mostrarBotaoNovaLeitura();
+}
 
   const invertida = Math.random() < 0.5;
 
@@ -389,6 +395,21 @@ function revelar(div, carta, pos){
     <p>${invertida ? carta.sombra : carta.luz}</p>
     <hr>
   `;
+}
+function mostrarBotaoNovaLeitura(){
+  if(document.getElementById("novaLeituraBtn")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "novaLeituraBtn";
+  btn.innerText = "🔄 Fazer nova leitura";
+  btn.style.marginTop = "20px";
+
+  btn.onclick = () => {
+    document.getElementById("game").style.display = "none";
+    document.getElementById("payment").style.display = "block";
+  };
+
+  document.getElementById("game").appendChild(btn);
 }
 
 </script>
