@@ -110,12 +110,12 @@ input {
 <div id="payment" style="display:none;">
   <p>🔮 Pagamento por leitura</p>
   <p><strong>R$ 5,00 por consulta</strong></p>
-
-  <button onclick="pagarPagSeguro()">Gerar PIX</button>
+   <button onclick="pagarPagSeguro()">Gerar PIX</button>
   <p style="font-size:13px; opacity:0.8;">
     ⏳ O QR Code pode levar até 30 segundos para aparecer.
   </p>
 
+ 
   <div id="pixArea" style="display:none;">
     <p>Escaneie o PIX:</p>
     <img id="pixQr">
@@ -233,18 +233,33 @@ function pagarPagSeguro(){
 }
 
 function iniciarVerificacaoPagamento(){
-  const intervalo = setInterval(() => {
+  const intervalo = setInterval(async () => {
 
-    fetch("https://oraculo-backend-spif.onrender.com/check-read", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ readId })
-    })
-    .then(r => r.json())
-    .then(res => {
+    try {
+      const r = await fetch("https://oraculo-backend-spif.onrender.com/check-read", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ readId })
+      });
+
+      const res = await r.json();
 
       if(res.valid){
+
         clearInterval(intervalo);
+
+        // 🔥 TRAVA IMEDIATA (evita segunda chamada)
+        const idTemp = readId;
+        readId = null;
+
+        // 🔥 CONSOME PRIMEIRO (ANTES DO JOGO)
+        await fetch("https://oraculo-backend-spif.onrender.com/use-read", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ readId: idTemp })
+        });
+
+        alert("Pagamento confirmado! Liberando o Oráculo...");
 
         document.getElementById("payment").style.display = "none";
         document.getElementById("game").style.display = "block";
@@ -252,15 +267,24 @@ function iniciarVerificacaoPagamento(){
         iniciarOraculoReal();
       }
 
-    })
-    .catch(() => {});
+    } catch(e) {
+      // silencioso
+    }
 
-  }, 3000); // a cada 3 segundos
+  }, 3000);
 }
 
 function iniciar(){
   if(executando) return;
   executando = true;
+
+  if(!readId){
+    alert("Pagamento necessário.");
+    document.getElementById("game").style.display = "none";
+    document.getElementById("payment").style.display = "block";
+    executando = false;
+    return;
+  }
 
   fetch("https://oraculo-backend-spif.onrender.com/check-read", {
     method: "POST",
@@ -276,6 +300,9 @@ function iniciar(){
       document.getElementById("payment").style.display = "block";
       return;
     }
+
+    // 🔒 BLOQUEIO EXTRA (evita segunda leitura)
+    readId = null;
 
     iniciarOraculoReal();
 
