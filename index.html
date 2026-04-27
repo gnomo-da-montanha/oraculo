@@ -61,16 +61,18 @@ input {
   object-fit: cover;
 }
 
-.pos0 { grid-column: 2; grid-row: 2; z-index: 2; }
-.pos1 { grid-column: 2; grid-row: 2; transform: rotate(90deg); z-index: 5; }
-.pos2 { grid-column: 2; grid-row: 3; }
-.pos3 { grid-column: 1; grid-row: 2; }
-.pos4 { grid-column: 2; grid-row: 1; }
-.pos5 { grid-column: 3; grid-row: 2; }
-.pos6 { grid-column: 4; grid-row: 1; }
-.pos7 { grid-column: 4; grid-row: 2; }
-.pos8 { grid-column: 4; grid-row: 3; }
-.pos9 { grid-column: 4; grid-row: 4; }
+.pos0 { grid-column: 2; grid-row: 2; z-index: 2; } /* 1 centro */
+.pos1 { grid-column: 2; grid-row: 2; transform: rotate(90deg); z-index: 5; } /* 2 cruz */
+
+.pos2 { grid-column: 1; grid-row: 2; } /* 3 esquerda (corrigido) */
+.pos3 { grid-column: 2; grid-row: 3; } /* 4 baixo (corrigido) */
+.pos4 { grid-column: 2; grid-row: 1; } /* 5 topo */
+.pos5 { grid-column: 3; grid-row: 2; } /* 6 direita */
+
+.pos6 { grid-column: 4; grid-row: 1; } /* 7 */
+.pos7 { grid-column: 4; grid-row: 2; } /* 8 */
+.pos8 { grid-column: 4; grid-row: 3; } /* 9 */
+.pos9 { grid-column: 4; grid-row: 4; } /* 10 */
 
 #output {
   max-width: 700px;
@@ -93,6 +95,39 @@ input {
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
+}
+#btnGuia {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #6a0dad;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 25px;
+  font-size: 14px;
+  z-index: 999;
+}
+
+#modalGuia {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+}
+
+#modalGuia .conteudo {
+  background: #111;
+  color: #e8d8a8;
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
 }
 </style>
 </head>
@@ -374,9 +409,9 @@ const cards = [
 ];
 
 const posicoes = [
-"Véu Presente","Força que Cruza","Raiz Oculta","Sombra do Passado",
-"Eco do Destino","Portal Imediato","Espelho do Eu","Correntes do Mundo",
-"Abismo e Luz","Selo do Desfecho"
+"Carta 1 - Situação Atual","Carta 2 - Desafio/Obstáculo","Carta 3 - Base/Origem","Carta 4 - Passado Recente",
+"Carta 5 - Objetivo/Consciente","Carta 6 - Futuro Próximo","Carta 7 - Você na Situação","Carta 8 - Ambiente/Influências Externas",
+"Carta 9 - Esperanças e Medos","Carta 10 - Resultado/Direção Final"
 ];
 
 function revelar(div, carta, pos){
@@ -385,9 +420,9 @@ function revelar(div, carta, pos){
   div.classList.add("ok");
   cartasViradas++;
 
-if(cartasViradas === 10){
-  mostrarBotaoNovaLeitura();
-}
+  if(cartasViradas === 10){
+    mostrarBotaoNovaLeitura();
+  }
 
   const invertida = Math.random() < 0.5;
 
@@ -401,11 +436,29 @@ if(cartasViradas === 10){
 
   document.getElementById("output").innerHTML += `
     <p><b>${pos}</b></p>
+    <p style="font-size:13px; opacity:0.8;">
+      ${
+        pos.includes("Situação") ? "Mostra o momento atual da sua vida." :
+        pos.includes("Desafio") ? "Indica o que está interferindo ou desafiando você." :
+        pos.includes("Base") ? "Revela a origem profunda da situação." :
+        pos.includes("Passado") ? "Mostra eventos recentes que influenciam agora." :
+        pos.includes("Objetivo") ? "Representa o que está consciente ou sendo buscado." :
+        pos.includes("Futuro") ? "Indica o que tende a acontecer em breve." :
+        pos.includes("Você") ? "Mostra sua postura diante da situação." :
+        pos.includes("Ambiente") ? "Revela influências externas ao seu redor." :
+        pos.includes("Esperanças") ? "Mostra seus medos e desejos internos." :
+        "Indica a tendência final da situação."
+      }
+    </p>
     <p><b>${carta.nome}</b> ${invertida ? "(invertida)" : ""}</p>
     <p>${invertida ? carta.sombra : carta.luz}</p>
     <hr>
   `;
+
+  // 🔥 SCROLL AUTOMÁTICO (corrige problema no celular)
+  window.scrollBy({ top: 120, behavior: "smooth" });
 }
+
 function mostrarBotaoNovaLeitura(){
   if(document.getElementById("novaLeituraBtn")) return;
 
@@ -422,7 +475,40 @@ function mostrarBotaoNovaLeitura(){
   document.getElementById("game").appendChild(btn);
 }
 
+window.addEventListener("load", () => {
+  const btn = document.getElementById("btnGuia");
+  const modal = document.getElementById("modalGuia");
+
+  if(btn && modal){
+    btn.onclick = () => {
+      modal.style.display = "block";
+    };
+  }
+});
+
+function fecharGuia() {
+  const modal = document.getElementById("modalGuia");
+  if(modal){
+    modal.style.display = "none";
+  }
+}
+
 </script>
+
+<!-- 🔮 BOTÃO GUIA -->
+<button id="btnGuia">🔮 Guia</button>
+
+<!-- 🔮 MODAL -->
+<div id="modalGuia">
+  <div class="conteudo">
+    <h2>🔮 Cruz Celta</h2>
+
+<img src="img/cruz_celta.png" style="width:100%; border-radius:10px; margin-bottom:15px;">
+    
+    <br>
+    <button onclick="fecharGuia()">Fechar</button>
+  </div>
+</div>
 
 </body>
 </html>
