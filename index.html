@@ -490,23 +490,48 @@ function mostrarBotaoNovaLeitura(){
   document.getElementById("game").appendChild(btn);
 }
 
-window.addEventListener("load", () => {
-  const btn = document.getElementById("btnGuia");
+function abrirGuia() {
   const modal = document.getElementById("modalGuia");
-
-  if(btn && modal){
-    btn.onclick = () => {
-      modal.style.display = "block";
-    };
-  }
-});
+  if (!modal) return;
+  modal.style.display = "block";
+}
 
 function fecharGuia() {
   const modal = document.getElementById("modalGuia");
-  if(modal){
-    modal.style.display = "none";
-  }
+  if (!modal) return;
+  modal.style.display = "none";
 }
+
+// garante que só roda quando tudo existe
+document.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("btnGuia");
+  const modal = document.getElementById("modalGuia");
+
+  if (btn) {
+    btn.addEventListener("click", abrirGuia);
+  }
+
+  // fecha clicando fora
+  if (modal) {
+    modal.addEventListener("click", fecharGuia);
+
+    const conteudo = modal.querySelector(".conteudo");
+    if (conteudo) {
+      conteudo.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+  }
+
+  // fecha no ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" || e.key === "Esc") {
+      fecharGuia();
+    }
+  });
+
+});
 
 </script>
 
