@@ -131,6 +131,19 @@ input {
   border-radius: 10px;
   text-align: left;
 }
+@media (max-width: 600px) {
+  #board {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 8;
+  }
+}
 </style>
 </head>
 
