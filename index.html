@@ -449,26 +449,33 @@ function revelar(div, carta, pos){
     img.style.transform = "rotate(180deg)";
   }
 
-  document.getElementById("output").innerHTML += `
-    <p><b>${pos}</b></p>
-    <p style="font-size:13px; opacity:0.8;">
-      ${
-        pos.includes("Situação") ? "Mostra o momento atual da sua vida." :
-        pos.includes("Desafio") ? "Indica o que está interferindo ou desafiando você." :
-        pos.includes("Base") ? "Revela a origem profunda da situação." :
-        pos.includes("Passado") ? "Mostra eventos recentes que influenciam agora." :
-        pos.includes("Objetivo") ? "Representa o que está consciente ou sendo buscado." :
-        pos.includes("Futuro") ? "Indica o que tende a acontecer em breve." :
-        pos.includes("Você") ? "Mostra sua postura diante da situação." :
-        pos.includes("Ambiente") ? "Revela influências externas ao seu redor." :
-        pos.includes("Esperanças") ? "Mostra seus medos e desejos internos." :
-        "Indica a tendência final da situação."
-      }
-    </p>
-    <p><b>${carta.nome}</b> ${invertida ? "(invertida)" : ""}</p>
-    <p>${invertida ? carta.sombra : carta.luz}</p>
-    <hr>
-  `;
+  const descricoes = {
+  1: "Mostra o momento atual da sua vida.",
+  2: "Indica o que está interferindo ou desafiando você.",
+  3: "Revela a origem profunda da situação.",
+  4: "Mostra eventos recentes que influenciam agora.",
+  5: "Representa o que está conscientemente sendo buscado.",
+  6: "Indica o que tende a acontecer em breve.",
+  7: "Mostra sua postura diante da situação.",
+  8: "Revela influências externas ao seu redor.",
+  9: "Mostra esperanças, medos e desejos internos.",
+  10: "Indica a tendência final da situação."
+};
+
+// extrai o número da carta (ex: "Carta 7 - Você na Situação")
+const numeroCarta = parseInt(pos.match(/\d+/)?.[0]);
+
+const descricao = descricoes[numeroCarta] || "";
+
+document.getElementById("output").innerHTML += `
+  <p><b>${pos}</b></p>
+  <p style="font-size:13px; opacity:0.8;">
+    ${descricao}
+  </p>
+  <p><b>${carta.nome}</b> ${invertida ? "(invertida)" : ""}</p>
+  <p>${invertida ? carta.sombra : carta.luz}</p>
+  <hr>
+`;
 
   // 🔥 SCROLL AUTOMÁTICO (corrige problema no celular)
   window.scrollBy({ top: 120, behavior: "smooth" });
