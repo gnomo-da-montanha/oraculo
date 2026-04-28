@@ -292,8 +292,22 @@ function pagarPagSeguro(){
   .finally(() => pagando = false);
 }
 
+let pollingInterval = null;
+let pagamentoConfirmado = false;
+
 function iniciarVerificacaoPagamento(){
-  const intervalo = setInterval(async () => {
+
+  // 🔥 evita múltiplos intervalos
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+  }
+
+  pagamentoConfirmado = false;
+
+  pollingInterval = setInterval(async () => {
+
+    // 🔥 trava geral (evita loop de alert)
+    if (pagamentoConfirmado) return;
 
     try {
       const r = await fetch("https://oraculo-backend-spif.onrender.com/check-read", {
@@ -304,15 +318,16 @@ function iniciarVerificacaoPagamento(){
 
       const res = await r.json();
 
-      if(res.valid){
+      if (res.valid && !pagamentoConfirmado) {
 
-        clearInterval(intervalo);
+        pagamentoConfirmado = true;
 
-        // 🔥 TRAVA IMEDIATA (evita segunda chamada)
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+
         const idTemp = readId;
         readId = null;
 
-        // 🔥 CONSOME PRIMEIRO (ANTES DO JOGO)
         await fetch("https://oraculo-backend-spif.onrender.com/use-read", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
