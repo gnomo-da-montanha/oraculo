@@ -6,11 +6,18 @@
 <title>Tarot Online - Oráculo da Cruz Celta</title>
 
 <style>
-body {
-  background: radial-gradient(circle, #0a0a0a, #000000);
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   color: #e8d8a8;
-  font-family: Georgia, serif;
+  font-family: 'Segoe UI', sans-serif;
   text-align: center;
+
+  background:
+    radial-gradient(circle at 30% 20%, rgba(106,13,173,0.25), transparent 40%),
+    radial-gradient(circle at 70% 80%, rgba(255,215,0,0.15), transparent 40%),
+    linear-gradient(180deg, #000000, #050505 60%, #0a0a0a);
 }
 
 h1 { margin-top: 20px; }
@@ -138,11 +145,125 @@ input {
     padding: 0 10px;
   }
 
+  #preLeitura {
+    padding: 15px;
+  }
+
+  .pergunta label {
+    display: block;
+    margin: 8px 0;
+  }
+
   .card {
     width: 100%;
     height: auto;
     aspect-ratio: 5 / 8;
   }
+}
+/* 🔥 AJUSTES DO QUESTIONÁRIO */
+
+#preLeitura {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(255, 215, 0, 0.03);
+  box-shadow: 0 0 15px rgba(255,215,0,0.1);
+}
+
+.pergunta {
+  margin-bottom: 25px;
+}
+
+.pergunta p {
+  margin-bottom: 10px;
+}
+
+.pergunta label {
+  margin: 0 15px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.pergunta input {
+  margin-right: 5px;
+}
+
+#btnContinuar {
+  margin-top: 25px;
+  padding: 12px 30px;
+  font-size: 15px;
+}
+
+#btnContinuar:hover {
+  transform: scale(1.05);
+}
+
+.pergunta:last-child {
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,215,0,0.2);
+}
+/* 🔥 NOVO VISUAL */
+
+#preLeitura {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 14px;
+  background: #111;
+  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+
+h2 {
+  font-weight: 600;
+}
+
+.pergunta {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.pergunta p {
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #ddd;
+}
+
+.opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opcao {
+  padding: 12px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.opcao:hover {
+  background: #222;
+}
+
+.opcao.selecionada {
+  background: #6a0dad;
+  border-color: #6a0dad;
+  color: white;
+}
+
+#btnContinuar {
+  margin-top: 20px;
+  width: 100%;
+  background: #6a0dad;
+  color: white;
+}
+
+#btnContinuar:disabled {
+  opacity: 0.5;
 }
 </style>
 </head>
@@ -150,8 +271,52 @@ input {
 <body>
 
 <h1>🔮 Tarot Online - Oráculo da Cruz Celta</h1>
+<div id="preLeitura">
+  <h2>Antes de revelar sua leitura...</h2>
+  <p style="margin-bottom:20px;">Responda com sinceridade:</p>
 
-<div id="login">
+  
+  <div class="pergunta">
+<p>Você sente que acaba vivendo os mesmos tipos de situações repetidamente?</p>
+    <div class="opcoes">
+      <div class="opcao" onclick="selecionar(this, 'q1')">Sim</div>
+      <div class="opcao" onclick="selecionar(this, 'q1')">Não</div>
+    </div>
+  </div>
+
+  <div class="pergunta">
+<p>Você já percebeu padrões que parecem se repetir, especialmente em relacionamentos, dinheiro ou decisões?</p>
+    <div class="opcoes">
+      <div class="opcao" onclick="selecionar(this, 'q2')">Sim</div>
+      <div class="opcao" onclick="selecionar(this, 'q2')">Não</div>
+    </div>
+  </div>
+
+  <div class="pergunta">
+<p>Você sente que existe algo oculto influenciando suas escolhas e bloqueando resultados?</p>
+    <div class="opcoes">
+      <div class="opcao" onclick="selecionar(this, 'q3')">Sim</div>
+      <div class="opcao" onclick="selecionar(this, 'q3')">Não</div>
+    </div>
+  </div>
+
+  <div class="pergunta">
+<p>Se você pudesse entender a raiz desses padrões por menos do que um café, você avançaria?</p>
+    <div class="opcoes">
+      <div class="opcao" onclick="selecionar(this, 'q4')">Sim</div>
+      <div class="opcao" onclick="selecionar(this, 'q4')">Não</div>
+    </div>
+  </div>
+
+  <button id="btnContinuar" disabled onclick="decisaoFinal()">Continuar</button>
+
+  
+  <p onclick="pular()" style="cursor:pointer; font-size:12px; margin-top:10px;">
+    Já consultei antes → ir direto
+  </p>
+</div>
+
+<div id="login" style="display:none;">
  <p>🔐 Acesse o Oráculo</p>
 
 <input id="email" type="email" placeholder="Email">
@@ -166,7 +331,14 @@ input {
 <button onclick="login()">Entrar</button>
 <button onclick="registrar()">Criar Conta</button>
 </div>
+<div id="duvida" style="display:none;">
+  <h3>Entendo sua dúvida...</h3>
+  <p>Muitas pessoas hesitam antes da primeira leitura —  
+  mas se surpreendem com a clareza que recebem.</p>
 
+  <button onclick="irLogin()">Ver minha leitura agora</button>
+  <button onclick="sair()">Agora não</button>
+</div>
 <div id="payment" style="display:none;">
   <p>🔮 Pagamento por leitura</p>
   <p><strong>R$ 5,00 por consulta</strong></p>
@@ -239,7 +411,44 @@ window.registrar = function () {
 
 <!-- 🔮 SCRIPT -->
 <script>
+// 🔥 FUNIL DE PERGUNTAS
+function decisaoFinal() {
+  const resposta = respostas["q4"];
 
+  document.getElementById("preLeitura").style.display = "none";
+
+  if (resposta === "Sim") {
+    irLogin();
+  } else {
+    document.getElementById("duvida").style.display = "block";
+  }
+}
+
+function irLogin() {
+  document.getElementById("duvida").style.display = "none";
+  document.getElementById("login").style.display = "block";
+}
+
+function sair() {
+  window.location.href = "https://google.com";
+}
+
+function pular() {
+  localStorage.setItem("preLeituraOk", "true");
+  document.getElementById("preLeitura").style.display = "none";
+  document.getElementById("login").style.display = "block";
+}
+// 🔥 ATIVAR BOTÃO
+document.addEventListener("DOMContentLoaded", () => {
+ 
+
+  // 🔥 PULAR DIRETO SE JÁ RESPONDEU
+  const jaRespondeu = localStorage.getItem("preLeituraOk");
+  if (jaRespondeu) {
+    document.getElementById("preLeitura").style.display = "none";
+    document.getElementById("login").style.display = "block";
+  }
+});
 let readId = null;
 let spread = [];
 let pagando = false;
@@ -249,6 +458,23 @@ let cartasViradas = 0;
 function shuffle(arr){
   return arr.sort(() => Math.random() - 0.5);
 }
+
+// 🔥 NOVO (cole aqui embaixo)
+
+let respostas = {};
+
+window.selecionar = function(el, pergunta) {
+  const opcoes = el.parentElement.querySelectorAll(".opcao");
+
+  opcoes.forEach(o => o.classList.remove("selecionada"));
+  el.classList.add("selecionada");
+
+  respostas[pergunta] = el.innerText;
+
+  if (Object.keys(respostas).length === 4) {
+    document.getElementById("btnContinuar").disabled = false;
+  }
+};
 
 function pagarPagSeguro(){
   if(pagando) return;
