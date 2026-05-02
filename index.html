@@ -265,6 +265,11 @@ h2 {
 #btnContinuar:disabled {
   opacity: 0.5;
 }
+#payment button {
+  margin-top: 15px;
+  width: 100%;
+  max-width: 280px;
+}
 </style>
 </head>
 
@@ -342,8 +347,9 @@ h2 {
 <div id="payment" style="display:none;">
   <p>🔮 Pagamento por leitura</p>
   <p><strong>R$ 5,00 por consulta</strong></p>
-   <button onclick="pagarPagSeguro()">Gerar PIX</button>
+<button onclick="pagarPagSeguro()">🔮 Liberar minha leitura agora</button>
   <p style="font-size:13px; opacity:0.8;">
+  
     ⏳ O QR Code pode levar até 30 segundos para aparecer.
   </p>
 
