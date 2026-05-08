@@ -406,7 +406,10 @@ const auth = getAuth(app);
 window.login = function () {
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
-
+if (!email || !senha) {
+  alert("Digite email e senha.");
+  return;
+}
   signInWithEmailAndPassword(auth, email, senha)
     .then(() => {
       document.getElementById("login").style.display = "none";
@@ -416,15 +419,24 @@ window.login = function () {
 };
 
 window.registrar = function () {
+
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
 
+  if (!email || !senha) {
+    alert("Digite email e senha.");
+    return;
+  }
+
   createUserWithEmailAndPassword(auth, email, senha)
+
     .then(() => signInWithEmailAndPassword(auth, email, senha))
+
     .then(() => {
       document.getElementById("login").style.display = "none";
       document.getElementById("payment").style.display = "block";
     })
+
     .catch(e => alert(e.message));
 };
 </script>
@@ -561,31 +573,26 @@ function iniciarVerificacaoPagamento(){
 
       const res = await r.json();
 
-      if (res.valid && !pagamentoConfirmado) {
+   if (res.valid && !pagamentoConfirmado) {
 
-        pagamentoConfirmado = true;
+  pagamentoConfirmado = true;
 
-        clearInterval(pollingInterval);
-        pollingInterval = null;
+  clearInterval(pollingInterval);
+  pollingInterval = null;
 
-        const idTemp = readId;
-        readId = null;
+  const idTemp = readId;
+  readId = null;
 
-        await fetch("https://oraculo-backend-spif.onrender.com/use-read", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({ readId: idTemp })
-        });
+  alert("Pagamento confirmado! Liberando o Oráculo...");
 
-        alert("Pagamento confirmado! Liberando o Oráculo...");
+  document.getElementById("payment").style.display = "none";
+  document.getElementById("game").style.display = "block";
 
-        document.getElementById("payment").style.display = "none";
-        document.getElementById("game").style.display = "block";
+  iniciarOraculoReal(idTemp);
 
-        iniciarOraculoReal(idTemp);
-      }
+}
 
-    } catch(e) {
+} catch(e) {
       // silencioso
     }
 
@@ -638,43 +645,56 @@ function iniciarVerificacaoPagamento(){
 }
 
 function iniciarOraculoReal(idLeitura){
-cartasViradas = 0;
-const antigoBtn = document.getElementById("novaLeituraBtn");
-if (antigoBtn) antigoBtn.remove();
+
+  cartasViradas = 0;
+
+  const antigoBtn = document.getElementById("novaLeituraBtn");
+  if (antigoBtn) antigoBtn.remove();
+
   const board = document.getElementById("board");
   const output = document.getElementById("output");
 
   board.innerHTML = "";
   output.innerHTML = "";
+
   fetch("https://oraculo-backend-spif.onrender.com/gerar-leitura", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ readId: idLeitura })
-})
-.then(r => r.json())
-.then(data => {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ readId: idLeitura })
+  })
 
-  spread = data;
+  .then(r => r.json())
 
-  for(let i=0;i<10;i++){
+  .then(async data => {
 
-    const div = document.createElement("div");
+    spread = data;
 
-    div.className = "card pos" + i;
+    for(let i = 0; i < 10; i++){
 
-    div.innerHTML = `<img src="img/verso.jpg">`;
+      const div = document.createElement("div");
 
-    div.onclick = () => revelar(div, spread[i], posicoes[i]);
+      div.className = "card pos" + i;
 
-    board.appendChild(div);
-  }
+      div.innerHTML = `<img src="img/verso.jpg">`;
 
-})
-.catch(() => {
-  alert("Erro ao gerar leitura.");
-});
+      div.onclick = () => revelar(div, spread[i], posicoes[i]);
+
+      board.appendChild(div);
+    }
+
+    await fetch("https://oraculo-backend-spif.onrender.com/use-read", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ readId: idLeitura })
+    });
+
+  })
+
+  .catch(() => {
+    alert("Erro ao gerar leitura. Sua leitura NÃO foi consumida.");
+  });
 
 }
   
