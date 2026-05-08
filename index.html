@@ -270,20 +270,6 @@ h2 {
   width: 100%;
   max-width: 280px;
 }
-@media (max-width: 600px) {
-
-  #btnGuia {
-    bottom: 80px;
-    right: 15px;
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-
-  #output {
-    padding-bottom: 120px;
-  }
-
-}
 </style>
 </head>
 
@@ -406,10 +392,7 @@ const auth = getAuth(app);
 window.login = function () {
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
-if (!email || !senha) {
-  alert("Digite email e senha.");
-  return;
-}
+
   signInWithEmailAndPassword(auth, email, senha)
     .then(() => {
       document.getElementById("login").style.display = "none";
@@ -419,24 +402,15 @@ if (!email || !senha) {
 };
 
 window.registrar = function () {
-
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
 
-  if (!email || !senha) {
-    alert("Digite email e senha.");
-    return;
-  }
-
   createUserWithEmailAndPassword(auth, email, senha)
-
     .then(() => signInWithEmailAndPassword(auth, email, senha))
-
     .then(() => {
       document.getElementById("login").style.display = "none";
       document.getElementById("payment").style.display = "block";
     })
-
     .catch(e => alert(e.message));
 };
 </script>
@@ -487,6 +461,10 @@ let pagando = false;
 let executando = false;
 let cartasViradas = 0;
 
+function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
+}
+
 // 🔥 NOVO (cole aqui embaixo)
 
 let respostas = {};
@@ -534,10 +512,9 @@ function pagarPagSeguro(){
       btn.id = "copyBtn";
       btn.innerText = "Copiar código PIX";
       btn.onclick = () => {
-  const codigo = document.getElementById("pixCode").innerText;
-  navigator.clipboard.writeText(codigo);
-  alert("PIX copiado!");
-};
+        navigator.clipboard.writeText(pix);
+        alert("PIX copiado!");
+      };
       document.getElementById("pixArea").appendChild(btn);
     }
 
@@ -573,35 +550,38 @@ function iniciarVerificacaoPagamento(){
 
       const res = await r.json();
 
-   if (res.valid && !pagamentoConfirmado) {
+      if (res.valid && !pagamentoConfirmado) {
 
-  pagamentoConfirmado = true;
+        pagamentoConfirmado = true;
 
-  clearInterval(pollingInterval);
-  pollingInterval = null;
+        clearInterval(pollingInterval);
+        pollingInterval = null;
 
-  const idTemp = readId;
-  readId = null;
+        const idTemp = readId;
+        readId = null;
 
-  alert("Pagamento confirmado! Liberando o Oráculo...");
+        await fetch("https://oraculo-backend-spif.onrender.com/use-read", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ readId: idTemp })
+        });
 
-  document.getElementById("payment").style.display = "none";
-  document.getElementById("game").style.display = "block";
+        alert("Pagamento confirmado! Liberando o Oráculo...");
 
-  iniciarOraculoReal(idTemp);
+        document.getElementById("payment").style.display = "none";
+        document.getElementById("game").style.display = "block";
 
-}
+        iniciarOraculoReal();
+      }
 
-} catch(e) {
+    } catch(e) {
       // silencioso
     }
 
   }, 3000);
 }
 
-
-  function iniciar(){
-
+function iniciar(){
   if(executando) return;
   executando = true;
 
@@ -628,76 +608,68 @@ function iniciarVerificacaoPagamento(){
       return;
     }
 
-    const idTemp = readId;
-
+    // 🔒 BLOQUEIO EXTRA (evita segunda leitura)
     readId = null;
 
-    iniciarOraculoReal(idTemp);
+    iniciarOraculoReal();
 
     fetch("https://oraculo-backend-spif.onrender.com/use-read", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ readId: idTemp })
+      body: JSON.stringify({ readId })
     });
 
   })
   .finally(() => executando = false);
 }
 
-function iniciarOraculoReal(idLeitura){
-
-  cartasViradas = 0;
-
-  const antigoBtn = document.getElementById("novaLeituraBtn");
-  if (antigoBtn) antigoBtn.remove();
-
+function iniciarOraculoReal(){
+cartasViradas = 0;
   const board = document.getElementById("board");
   const output = document.getElementById("output");
 
   board.innerHTML = "";
   output.innerHTML = "";
 
-  fetch("https://oraculo-backend-spif.onrender.com/gerar-leitura", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ readId: idLeitura })
-  })
+  spread = shuffle([...cards]).slice(0,10);
 
-  .then(r => r.json())
+  for(let i=0;i<10;i++){
+    const div = document.createElement("div");
+    div.className = "card pos" + i;
 
-  .then(async data => {
+    div.innerHTML = `<img src="img/verso.jpg">`;
+    div.onclick = () => revelar(div, spread[i], posicoes[i]);
 
-    spread = data;
-
-    for(let i = 0; i < 10; i++){
-
-      const div = document.createElement("div");
-
-      div.className = "card pos" + i;
-
-      div.innerHTML = `<img src="img/verso.jpg">`;
-
-      div.onclick = () => revelar(div, spread[i], posicoes[i]);
-
-      board.appendChild(div);
-    }
-
-    await fetch("https://oraculo-backend-spif.onrender.com/use-read", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ readId: idLeitura })
-    });
-
-  })
-
-  .catch(() => {
-    alert("Erro ao gerar leitura. Sua leitura NÃO foi consumida.");
-  });
-
+    board.appendChild(div);
+  }
 }
-  
+
+/* CARTAS */
+const cards = [
+{nome:"O Louco",img:"img/louco.jpg",luz:"Um chamado para abandonar o controle e atravessar o desconhecido. Um novo ciclo se inicia, exigindo fé no invisível.",sombra:"Impulsividade, imprudência ou fuga da realidade. Caminhar sem consciência das consequências."},
+{nome:"O Mago",img:"img/mago.jpg",luz:"Você possui os recursos necessários para manifestar sua realidade. Ação consciente e intenção alinhada criam resultados.",sombra:"Manipulação, ilusão ou uso indevido do poder pessoal."},
+{nome:"A Sacerdotisa",img:"img/sacerdotisa.jpg",luz:"A resposta está dentro. Silêncio, intuição e percepção além do óbvio revelam o caminho.",sombra:"Negação da intuição ou bloqueio emocional interno."},
+{nome:"A Imperatriz",img:"img/imperatriz.jpg",luz:"Crescimento, fertilidade e criação. Algo está florescendo em sua vida.",sombra:"Excesso, apego ao conforto ou estagnação no prazer."},
+{nome:"O Imperador",img:"img/imperador.jpg",luz:"Estrutura, liderança e estabilidade. É hora de assumir controle e responsabilidade.",sombra:"Rigidez, autoritarismo ou necessidade de controle excessivo."},
+{nome:"O Hierofante",img:"img/hierofante.jpg",luz:"Aprendizado através de tradições e ensinamentos. Um guia pode surgir.",sombra:"Dogmas, crenças limitantes ou submissão cega."},
+{nome:"Os Enamorados",img:"img/enamorados.jpg",luz:"Escolhas alinhadas ao coração. União e conexão verdadeira.",sombra:"Dúvida, conflito interno ou decisões baseadas em medo."},
+{nome:"O Carro",img:"img/carro.jpg",luz:"Avanço, conquista e direção clara. Movimento decidido.",sombra:"Falta de controle, pressa ou caminho sem direção."},
+{nome:"A Força",img:"img/forca.jpg",luz:"Domínio emocional e coragem interior. Força gentil.",sombra:"Explosões emocionais ou repressão de sentimentos."},
+{nome:"O Eremita",img:"img/eremita.jpg",luz:"Busca interior, sabedoria e introspecção.",sombra:"Isolamento, solidão ou fuga do mundo."},
+{nome:"Roda da Fortuna",img:"img/roda.jpg",luz:"Mudanças inevitáveis. Um novo ciclo está em movimento.",sombra:"Instabilidade, falta de controle sobre os acontecimentos."},
+{nome:"Justiça",img:"img/justica.jpg",luz:"Equilíbrio, verdade e responsabilidade pelas próprias ações.",sombra:"Injustiça, desequilíbrio ou julgamento equivocado."},
+{nome:"O Enforcado",img:"img/enforcado.jpg",luz:"Nova perspectiva, entrega e pausa necessária.",sombra:"Estagnação, resistência à mudança ou vitimização."},
+{nome:"A Morte",img:"img/morte.jpg",luz:"Transformação profunda. Fim necessário para um novo começo.",sombra:"Resistência à mudança ou apego ao passado."},
+{nome:"Temperança",img:"img/temperanca.jpg",luz:"Harmonia, equilíbrio e integração.",sombra:"Desequilíbrio, excesso ou falta de alinhamento."},
+{nome:"O Diabo",img:"img/diabo.jpg",luz:"Consciência das próprias sombras e libertação através da verdade.",sombra:"Aprisionamento, vícios ou dependências emocionais."},
+{nome:"A Torre",img:"img/torre.jpg",luz:"Ruptura necessária. Verdades sendo reveladas.",sombra:"Colapso, perda ou choque inesperado."},
+{nome:"A Estrela",img:"img/estrela.jpg",luz:"Esperança, cura e renovação espiritual.",sombra:"Desânimo, perda de fé ou desconexão interior."},
+{nome:"A Lua",img:"img/lua.jpg",luz:"Intuição profunda, mistério e sensibilidade.",sombra:"Confusão, ilusões ou medo do desconhecido."},
+{nome:"O Sol",img:"img/sol.jpg",luz:"Clareza, alegria e sucesso.",sombra:"Ego inflado ou excesso de confiança."},
+{nome:"O Julgamento",img:"img/julgamento.jpg",luz:"Despertar, renascimento e chamado interior.",sombra:"Negação, arrependimento ou falta de ação."},
+{nome:"O Mundo",img:"img/mundo.jpg",luz:"Conclusão, realização e integração total.",sombra:"Ciclo incompleto ou sensação de vazio mesmo após conquistas."}
+];
+
 const posicoes = [
 "Carta 1 - Situação Atual","Carta 2 - Desafio/Obstáculo","Carta 3 - Base/Origem","Carta 4 - Passado Recente",
 "Carta 5 - Objetivo/Consciente","Carta 6 - Futuro Próximo","Carta 7 - Você na Situação","Carta 8 - Ambiente/Influências Externas",
@@ -714,14 +686,15 @@ function revelar(div, carta, pos){
     mostrarBotaoNovaLeitura();
   }
 
-  
+  const invertida = Math.random() < 0.5;
+
   div.innerHTML = `<img src="${carta.img}" class="card-img">`;
 
   const img = div.querySelector("img");
 
-  if(carta.invertida){
-  img.style.transform = "rotate(180deg)";
-}
+  if(invertida){
+    img.style.transform = "rotate(180deg)";
+  }
 
   const descricoes = {
   1: "Mostra o momento atual da sua vida.",
@@ -746,8 +719,8 @@ document.getElementById("output").innerHTML += `
   <p style="font-size:13px; opacity:0.8;">
     ${descricao}
   </p>
-  <p><b>${carta.nome}</b> ${carta.invertida ? "(invertida)" : ""}</p>
-  <p>${carta.texto}</p>
+  <p><b>${carta.nome}</b> ${invertida ? "(invertida)" : ""}</p>
+  <p>${invertida ? carta.sombra : carta.luz}</p>
   <hr>
 `;
 
@@ -789,12 +762,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let zoom = 1;
 
   const img = document.querySelector("#modalGuia img");
-  // 🔥 ARRASTAR IMAGEM QUANDO ZOOM > 1
-let isDragging = false;
-let startX, startY;
-let translateX = 0;
-let translateY = 0;
-
 
   if (img) {
     img.addEventListener("wheel", function(e) {
@@ -811,71 +778,58 @@ let translateY = 0;
       img.style.transform = `scale(${zoom}) translate(${translateX}px, ${translateY}px)`;
     });
   }
-  
-if (img) {
+  // 🔥 ARRASTAR IMAGEM QUANDO ZOOM > 1
+let isDragging = false;
+let startX, startY;
+let translateX = 0;
+let translateY = 0;
 
-  img.style.cursor = "grab";
+img.style.cursor = "grab";
 
-  img.addEventListener("mousedown", (e) => {
-
+img.addEventListener("mousedown", (e) => {
   if (zoom <= 1) return;
 
   isDragging = true;
   startX = e.clientX - translateX;
   startY = e.clientY - translateY;
-
   img.style.cursor = "grabbing";
 });
 
 document.addEventListener("mousemove", (e) => {
-
   if (!isDragging) return;
 
   translateX = e.clientX - startX;
   translateY = e.clientY - startY;
 
-  img.style.transform =
-    `scale(${zoom}) translate(${translateX}px, ${translateY}px)`;
-
+  img.style.transform = `scale(${zoom}) translate(${translateX}px, ${translateY}px)`;
 });
 
 document.addEventListener("mouseup", () => {
-
   isDragging = false;
-
-  if (img) {
-    img.style.cursor = "grab";
-  }
-
+  img.style.cursor = "grab";
 });
 
-}
+  const btn = document.getElementById("btnGuia");
+  const modal = document.getElementById("modalGuia");
 
-const btn = document.getElementById("btnGuia");
-const modal = document.getElementById("modalGuia");
-
-if (btn) {
-  btn.addEventListener("click", abrirGuia);
-}
-
-// fecha clicando fora
-if (modal) {
-
-  modal.addEventListener("click", fecharGuia);
-
-  const conteudo = modal.querySelector(".conteudo");
-
-  if (conteudo) {
-    conteudo.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+  if (btn) {
+    btn.addEventListener("click", abrirGuia);
   }
-}
 
-// fecha no ESC
-document.addEventListener("keydown", (e) => {
+  // fecha clicando fora
+  if (modal) {
+    modal.addEventListener("click", fecharGuia);
 
-  
+    const conteudo = modal.querySelector(".conteudo");
+    if (conteudo) {
+      conteudo.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+  }
+
+  // fecha no ESC
+  document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" || e.key === "Esc") {
       fecharGuia();
     }
