@@ -3,7 +3,9 @@ import cors from "cors";
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  type: "*/*"
+}));
 
 /* =========================
    CONFIG TOKEN (SAFE)
@@ -106,49 +108,59 @@ app.post("/criar-pagamento", async (req, res) => {
    WEBHOOK PAGSEGURO
 ========================= */
 app.post("/webhook-pagseguro", (req, res) => {
+
   try {
+
     console.log("🔥 WEBHOOK RECEBIDO");
     console.log(JSON.stringify(req.body, null, 2));
 
     const body = req.body;
 
-    // 🚫 IGNORA QUALQUER COISA VAZIA OU INVÁLIDA
-    if (
-      !body ||
-      !body.id ||
-      !body.charges ||
-      !body.charges[0] ||
-      !body.charges[0].status ||
-      !body.charges[0].payment_method
-    ) {
-      console.log("⚠️ WEBHOOK IGNORADO (inválido)");
+    // 🔥 pega charge corretamente
+    const charge = body?.charges?.[0];
+
+    if (!charge) {
+      console.log("⚠️ WEBHOOK IGNORADO (sem charge)");
       return res.sendStatus(200);
     }
 
-    const orderId = body.id;
-    const charge = body.charges[0];
-
+    // 🔥 pega dados corretos
     const status = charge.status;
     const metodo = charge.payment_method?.type;
 
-    // ✅ SOMENTE PIX PAGO DE VERDADE
+    // 🔥 O ID REAL DA LEITURA
+    const referenceId = charge.reference_id;
+
+    // ✅ SOMENTE PIX PAGO
     if (status === "PAID" && metodo === "PIX") {
-      if (reads[orderId]) {
-        reads[orderId].paid = true;
-        console.log("✅ PAGAMENTO CONFIRMADO REAL:", orderId);
+
+      if (reads[referenceId]) {
+
+        reads[referenceId].paid = true;
+
+        console.log("✅ PAGAMENTO CONFIRMADO REAL:", referenceId);
+
       } else {
-        console.log("⚠️ ORDER NÃO EXISTE NO SISTEMA:", orderId);
+
+        console.log("⚠️ LEITURA NÃO EXISTE:", referenceId);
+
       }
+
     } else {
+
       console.log("⚠️ IGNORADO:", status, metodo);
+
     }
 
     res.sendStatus(200);
 
   } catch (err) {
+
     console.error(err);
     res.sendStatus(500);
+
   }
+
 });
 /* =========================
    CONTROLE DE ACESSO
