@@ -9,8 +9,7 @@ app.use(express.json());
    CONFIG TOKEN (SAFE)
 ========================= */
 const TOKEN =
-  process.env.PAGSEGURO_TOKEN ||
-  "3e4cc0c3-8249-4f79-afbf-90f185cbd6592edd5fdb48b68ddd4bf0ed60146f33a2a58e-84a7-487e-81fb-af2c4f922212";
+  process.env.PAGSEGURO_TOKEN;
 
 /* =========================
    MEMÓRIA TEMPORÁRIA
