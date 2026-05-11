@@ -645,29 +645,49 @@ cartasViradas = 0;
 }
 
 /* CARTAS */
-const cards = [
-{nome:"O Louco",img:"img/louco.jpg",luz:"Um chamado para abandonar o controle e atravessar o desconhecido. Um novo ciclo se inicia, exigindo fé no invisível.",sombra:"Impulsividade, imprudência ou fuga da realidade. Caminhar sem consciência das consequências."},
-{nome:"O Mago",img:"img/mago.jpg",luz:"Você possui os recursos necessários para manifestar sua realidade. Ação consciente e intenção alinhada criam resultados.",sombra:"Manipulação, ilusão ou uso indevido do poder pessoal."},
-{nome:"A Sacerdotisa",img:"img/sacerdotisa.jpg",luz:"A resposta está dentro. Silêncio, intuição e percepção além do óbvio revelam o caminho.",sombra:"Negação da intuição ou bloqueio emocional interno."},
-{nome:"A Imperatriz",img:"img/imperatriz.jpg",luz:"Crescimento, fertilidade e criação. Algo está florescendo em sua vida.",sombra:"Excesso, apego ao conforto ou estagnação no prazer."},
-{nome:"O Imperador",img:"img/imperador.jpg",luz:"Estrutura, liderança e estabilidade. É hora de assumir controle e responsabilidade.",sombra:"Rigidez, autoritarismo ou necessidade de controle excessivo."},
-{nome:"O Hierofante",img:"img/hierofante.jpg",luz:"Aprendizado através de tradições e ensinamentos. Um guia pode surgir.",sombra:"Dogmas, crenças limitantes ou submissão cega."},
-{nome:"Os Enamorados",img:"img/enamorados.jpg",luz:"Escolhas alinhadas ao coração. União e conexão verdadeira.",sombra:"Dúvida, conflito interno ou decisões baseadas em medo."},
-{nome:"O Carro",img:"img/carro.jpg",luz:"Avanço, conquista e direção clara. Movimento decidido.",sombra:"Falta de controle, pressa ou caminho sem direção."},
-{nome:"A Força",img:"img/forca.jpg",luz:"Domínio emocional e coragem interior. Força gentil.",sombra:"Explosões emocionais ou repressão de sentimentos."},
-{nome:"O Eremita",img:"img/eremita.jpg",luz:"Busca interior, sabedoria e introspecção.",sombra:"Isolamento, solidão ou fuga do mundo."},
-{nome:"Roda da Fortuna",img:"img/roda.jpg",luz:"Mudanças inevitáveis. Um novo ciclo está em movimento.",sombra:"Instabilidade, falta de controle sobre os acontecimentos."},
-{nome:"Justiça",img:"img/justica.jpg",luz:"Equilíbrio, verdade e responsabilidade pelas próprias ações.",sombra:"Injustiça, desequilíbrio ou julgamento equivocado."},
-{nome:"O Enforcado",img:"img/enforcado.jpg",luz:"Nova perspectiva, entrega e pausa necessária.",sombra:"Estagnação, resistência à mudança ou vitimização."},
-{nome:"A Morte",img:"img/morte.jpg",luz:"Transformação profunda. Fim necessário para um novo começo.",sombra:"Resistência à mudança ou apego ao passado."},
-{nome:"Temperança",img:"img/temperanca.jpg",luz:"Harmonia, equilíbrio e integração.",sombra:"Desequilíbrio, excesso ou falta de alinhamento."},
-{nome:"O Diabo",img:"img/diabo.jpg",luz:"Consciência das próprias sombras e libertação através da verdade.",sombra:"Aprisionamento, vícios ou dependências emocionais."},
-{nome:"A Torre",img:"img/torre.jpg",luz:"Ruptura necessária. Verdades sendo reveladas.",sombra:"Colapso, perda ou choque inesperado."},
-{nome:"A Estrela",img:"img/estrela.jpg",luz:"Esperança, cura e renovação espiritual.",sombra:"Desânimo, perda de fé ou desconexão interior."},
-{nome:"A Lua",img:"img/lua.jpg",luz:"Intuição profunda, mistério e sensibilidade.",sombra:"Confusão, ilusões ou medo do desconhecido."},
-{nome:"O Sol",img:"img/sol.jpg",luz:"Clareza, alegria e sucesso.",sombra:"Ego inflado ou excesso de confiança."},
-{nome:"O Julgamento",img:"img/julgamento.jpg",luz:"Despertar, renascimento e chamado interior.",sombra:"Negação, arrependimento ou falta de ação."},
-{nome:"O Mundo",img:"img/mundo.jpg",luz:"Conclusão, realização e integração total.",sombra:"Ciclo incompleto ou sensação de vazio mesmo após conquistas."}
+const cards = [{nome:"O Louco",img:"img/louco.jpg",luz:"Um novo ciclo parece se abrir diante de você, ainda que nem todos os caminhos estejam claros. Existe um chamado para confiar mais na experiência do que no excesso de controle.",sombra:"Impulsividade, fuga emocional ou dificuldade em perceber as consequências das próprias escolhas. Nem todo salto representa liberdade."},
+
+{nome:"O Mago",img:"img/mago.jpg",luz:"Você talvez possua mais recursos e capacidade do que imagina neste momento. A carta sugere potencial de transformação quando intenção e ação começam a caminhar juntas.",sombra:"Manipulação, ilusões ou tentativa de controlar excessivamente pessoas e situações. O poder perde força quando usado sem consciência."},
+
+{nome:"A Sacerdotisa",img:"img/sacerdotisa.jpg",luz:"Há algo sendo revelado silenciosamente dentro de você. A resposta pode não surgir através da lógica imediata, mas da percepção sutil e da escuta interior.",sombra:"Bloqueios emocionais, negação da própria intuição ou dificuldade em enxergar o que já vem sendo sentido há algum tempo."},
+
+{nome:"A Imperatriz",img:"img/imperatriz.jpg",luz:"Existe potencial de crescimento e florescimento, ainda que o processo talvez exija paciência. Algo em sua vida busca espaço para amadurecer de forma mais natural.",sombra:"Excessos emocionais, apego ao conforto ou dificuldade em sair de padrões que já não estimulam verdadeiro crescimento."},
+
+{nome:"O Imperador",img:"img/imperador.jpg",luz:"A carta sugere necessidade de estrutura, firmeza e responsabilidade diante do momento atual. Em certas situações, assumir posição pode ser inevitável.",sombra:"Rigidez, necessidade exagerada de controle ou dificuldade em lidar com aquilo que escapa do planejamento."},
+
+{nome:"O Hierofante",img:"img/hierofante.jpg",luz:"Aprendizados importantes podem surgir através de orientações, experiências antigas ou pessoas que carregam conhecimento. Nem tudo precisa ser descoberto sozinho.",sombra:"Dogmas, crenças limitantes ou dependência excessiva da validação externa para tomar decisões."},
+
+{nome:"Os Enamorados",img:"img/enamorados.jpg",luz:"Existe uma busca por alinhamento entre desejo, emoção e verdade interior. Algumas escolhas talvez revelem mais sobre você do que sobre o caminho em si.",sombra:"Conflitos internos, indecisão ou medo das consequências emocionais ligadas a certas escolhas."},
+
+{nome:"O Carro",img:"img/carro.jpg",luz:"Movimento e avanço parecem possíveis, mas talvez seja necessário recuperar clareza antes de seguir acelerando. Direção importa mais do que velocidade.",sombra:"Pressa, perda de controle emocional ou sensação de estar sendo conduzido pelas circunstâncias."},
+
+{nome:"A Força",img:"img/forca.jpg",luz:"A verdadeira força talvez esteja na forma como você lida com aquilo que sente. Há coragem no autocontrole e também na vulnerabilidade consciente.",sombra:"Explosões emocionais, repressão excessiva ou desgaste causado por tentar suportar tudo sozinho."},
+
+{nome:"O Eremita",img:"img/eremita.jpg",luz:"Este pode ser um período de reflexão profunda e afastamento necessário para compreender melhor certos sentimentos ou decisões.",sombra:"Isolamento prolongado, dificuldade em pedir ajuda ou tendência a se fechar além do necessário."},
+
+{nome:"Roda da Fortuna",img:"img/roda.jpg",luz:"Mudanças começam a movimentar situações que talvez estivessem paradas há algum tempo. Nem tudo está sob controle, mas alguns ciclos precisam girar.",sombra:"Sensação de instabilidade, imprevisibilidade ou dificuldade em se adaptar às mudanças inevitáveis."},
+
+{nome:"Justiça",img:"img/justica.jpg",luz:"A carta sugere necessidade de equilíbrio e honestidade consigo mesmo. Certas consequências talvez estejam apenas refletindo escolhas anteriores.",sombra:"Desequilíbrios, julgamentos precipitados ou dificuldade em enxergar a situação de forma mais imparcial."},
+
+{nome:"O Enforcado",img:"img/enforcado.jpg",luz:"Talvez exista uma pausa necessária antes que algo volte a fluir. Nem toda demora representa atraso; algumas servem para mudar a percepção.",sombra:"Estagnação, resistência interna ou sensação de sacrifício sem compreender o propósito do momento."},
+
+{nome:"A Morte",img:"img/morte.jpg",luz:"Transformações profundas começam a acontecer, ainda que parte de você talvez resista ao encerramento de certos ciclos.",sombra:"Apego ao passado, medo da mudança ou dificuldade em aceitar que algo já não possui o mesmo sentido."},
+
+{nome:"Temperança",img:"img/temperanca.jpg",luz:"Existe um convite para reorganizar emoções, pensamentos e expectativas de forma mais equilibrada. Nem tudo precisa ser resolvido imediatamente.",sombra:"Exageros, conflitos internos ou sensação de desalinhamento entre aquilo que você sente e aquilo que demonstra."},
+
+{nome:"O Diabo",img:"img/diabo.jpg",luz:"A carta convida a enxergar padrões, desejos ou vínculos que talvez estejam exercendo mais influência do que aparentam. Reconhecer a sombra também é libertador.",sombra:"Aprisionamentos emocionais, dependências, excessos ou repetição de comportamentos difíceis de abandonar."},
+
+{nome:"A Torre",img:"img/torre.jpg",luz:"Algumas estruturas talvez precisem ruir para que algo mais verdadeiro possa surgir. Certas revelações, embora desconfortáveis, libertam.",sombra:"Choques inesperados, sensação de perda ou medo diante de mudanças que escapam ao controle."},
+
+{nome:"A Estrela",img:"img/estrela.jpg",luz:"Mesmo em meio às incertezas, ainda existe potencial de renovação e esperança. Pequenos sinais podem ajudar a recuperar a confiança no caminho.",sombra:"Desânimo, desconexão emocional ou dificuldade em acreditar que as coisas possam melhorar."},
+
+{nome:"A Lua",img:"img/lua.jpg",luz:"Nem tudo está totalmente claro neste momento. A sensibilidade aumenta, assim como a necessidade de confiar mais na percepção interior.",sombra:"Confusão emocional, ilusões, inseguranças ou medo de enxergar certas verdades mais profundamente."},
+
+{nome:"O Sol",img:"img/sol.jpg",luz:"Existe potencial de clareza, crescimento e reconhecimento, embora talvez ainda existam questões internas impedindo você de perceber plenamente essa luz.",sombra:"Excesso de confiança, necessidade constante de validação ou dificuldade em enxergar limitações reais."},
+
+{nome:"O Julgamento",img:"img/julgamento.jpg",luz:"Um chamado interno parece surgir com força neste período. Talvez seja hora de olhar para si mesmo com mais verdade e menos culpa.",sombra:"Negação, arrependimentos acumulados ou dificuldade em agir mesmo sabendo o que precisa ser transformado."},
+
+{nome:"O Mundo",img:"img/mundo.jpg",luz:"Um ciclo importante caminha para conclusão, ainda que parte de você talvez esteja tentando compreender o que fazer depois dessa etapa.",sombra:"Sensação de incompletude, vazio após conquistas ou dificuldade em encerrar verdadeiramente certos processos."}
 ];
 
 const posicoes = [
