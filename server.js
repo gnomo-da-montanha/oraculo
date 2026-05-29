@@ -23,7 +23,7 @@ app.post("/criar-pagamento", async (req, res) => {
   try {
     console.log("🔥 CRIAR PIX");
 
-    const { total = 500, referencia, cliente } = req.body;
+    const { total = 1990, referencia, cliente } = req.body;
 
     const body = {
       reference_id: referencia || Date.now().toString(),
@@ -190,14 +190,14 @@ app.get("/teste-pagbank", async (req, res) => {
         {
           name: "Consulta Oráculo",
           quantity: 1,
-          unit_amount: 500
+          unit_amount: 1990
         }
       ],
 
       qr_codes: [
         {
           amount: {
-            value: 500
+            value: 1990
           }
         }
       ],
